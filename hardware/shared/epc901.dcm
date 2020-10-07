@@ -1,0 +1,53 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP AD7476
+D 1 MSPS, 12-Bit ADC in 6-Lead SOT-23
+K ADC
+F https://www.analog.com/media/en/technical-documentation/data-sheets/AD7476_7477_7478.pdf
+$ENDCMP
+#
+$CMP AD7477
+D 1 MSPS, 10-Bit ADC in 6-Lead SOT-23
+K ADC
+F https://www.analog.com/media/en/technical-documentation/data-sheets/AD7476_7477_7478.pdf
+$ENDCMP
+#
+$CMP AD7478
+D 1 MSPS, 8-Bit ADC in 6-Lead SOT-23
+K ADC
+F https://www.analog.com/media/en/technical-documentation/data-sheets/AD7476_7477_7478.pdf
+$ENDCMP
+#
+$CMP AD747x
+D 1 MSPS, 12-/10-/8-Bit ADCs in 6-Lead SOT-23
+K ADC
+F https://www.analog.com/media/en/technical-documentation/data-sheets/AD7476_7477_7478.pdf
+$ENDCMP
+#
+$CMP ADC7478
+D 1 MSPS, 8-Bit ADC in 6-Lead SOT-23
+K ADC
+F https://www.ti.com/lit/ds/symlink/adcs7478.pdf
+$ENDCMP
+#
+$CMP ADCS7476
+D 1 MSPS, 12-Bit ADC in 6-Lead SOT-23
+K ADC
+F https://www.ti.com/lit/ds/symlink/adcs7476.pdf
+$ENDCMP
+#
+$CMP ADCS7477
+D 1 MSPS, 10-Bit ADC in 6-Lead SOT-23
+K ADC
+F https://www.ti.com/lit/ds/symlink/adcs7477.pdf
+$ENDCMP
+#
+$CMP EPC901
+F https://www.espros.com/downloads/01_Chips/Datasheet_epc901.pdf
+$ENDCMP
+#
+$CMP EPC901-alt
+F https://www.espros.com/downloads/01_Chips/Datasheet_epc901.pdf
+$ENDCMP
+#
+#End Doc Library
