@@ -12,6 +12,8 @@ class Camera:
             self.ser.write(b"@echo off\n")
             self.ser.readline()
             self.ser.readline()
+            self.ser.write(b"@reset sensor\n")
+            self.ser.readline()     # ok
         except Exception as e:
             print("Failed to connect to sensor on port ", port)
             print("Exception: " + str(e))
