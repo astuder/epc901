@@ -153,29 +153,23 @@ uint16_t EPC901::_readImage(uint16_t* buffer) {
 	spi->CR1 |= 0x1 << 6;
 	while (pixel < 1024) {
 		// ADC CS low - sample HOLD
-//		HAL_GPIO_WritePin(ADC_CS_GPIO_Port, ADC_CS_Pin, GPIO_PIN_RESET);
 		ADC_CS_GPIO_Port->BRR = (uint32_t)ADC_CS_Pin;
 		// READ high
-//		HAL_GPIO_WritePin(READ_GPIO_Port, READ_Pin, GPIO_PIN_SET);
 		READ_GPIO_Port->BSRR = (uint32_t)READ_Pin;
 		// read 1 byte from ADC
-//		HAL_SPI_Receive(_spi_handle, &data_msb, 1, -1);
 		*(__IO uint8_t *)&spi->DR = 0;
 		while (!(spi->SR & SPI_FLAG_RXNE));
 		data_msb = *(__IO uint8_t *)&spi->DR;
 		// READ low
-//		HAL_GPIO_WritePin(READ_GPIO_Port, READ_Pin, GPIO_PIN_RESET);
 		READ_GPIO_Port->BRR = (uint32_t)READ_Pin;
 		// read 1 byte from ADC (ADC switches to SAMPLE on 13th bit)
-//		HAL_SPI_Receive(_spi_handle, &data_lsb, 1, -1);
 		*(__IO uint8_t *)&spi->DR = 0;
 		while (!(spi->SR & SPI_FLAG_RXNE));
 		data_lsb = *(__IO uint8_t *)&spi->DR;
 		// ADC CS high
-//		HAL_GPIO_WritePin(ADC_CS_GPIO_Port, ADC_CS_Pin, GPIO_PIN_SET);
 		ADC_CS_GPIO_Port->BSRR = (uint32_t)ADC_CS_Pin;
 		if (count < 4) {
-			// discard first 3 (4?) samples (pre-loading cycles, also covers ADC power-up)
+			// discard first 4 samples (3 pre-loading cycles, 1 ADC sample/conversion pipeline)
 		} else {
 			// store pixel
 			buffer[pixel] = (data_msb << 7) | (data_lsb >> 1);
