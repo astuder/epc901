@@ -29,13 +29,32 @@ class Camera:
         self.ser.write(exposure_str)
         self.ser.readline()     # ok
 
+    def setBurst(self, frames, interval):
+        burst_str = "@burst frames {}\n".format(frames).encode("utf-8");
+        self.ser.write(burst_str)
+        self.ser.readline()     # ok
+        burst_str = "@burst delay {}\n".format(interval).encode("utf-8");
+        self.ser.write(burst_str)
+        self.ser.readline()     # ok
+
     def capture(self):
         self.ser.write(b"@capture\n")
+        self.ser.readline()     # ok
+
+    def captureBurst(self):
+        self.ser.write(b"@burst on\n")
+        self.ser.readline()     # ok
+        self.ser.write(b"@capture\n")
+        self.ser.readline()     # ok
+        self.ser.write(b"@burst off\n")
         self.ser.readline()     # ok
 
     def getPixels(self):
         self.ser.write(b"@transfer\n")
         frame_meta = self.ser.readline()     # frame number, timestamp, exposure
+        if frame_meta.startswith(b"ERROR"):
+            # no pixels available
+            return
         frame_data = [int(x, 16) for x in wrap(self.ser.readline().decode("utf-8"), 4)]
         return frame_data
 

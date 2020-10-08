@@ -9,43 +9,63 @@ import argparse
 parser = argparse.ArgumentParser(description="EPC901 Live View 0.1")
 parser.add_argument("-p", help="serial port of camera, for example /dev/serial0 or COM3", dest="port", required=True)
 parser.add_argument("-e", help="exposure time in milliseconds", dest="exposure", type=int, default=1000)
+parser.add_argument("-f", help="number of frames in burst", dest="frames", type=int, default=10)
+parser.add_argument("-i", help="interval in milliseconds between frames (0 = best effort)", dest="interval", type=int, default=0)
 parser.add_argument("-a", help="automatically scale based on image content", dest="auto_scale", action="store_true", default=False)
 parser.add_argument("-q", help="quiet mode, don't show window with graph", dest="quiet", action="store_true", default=False)
 parser.add_argument("-gpng", help="file to save graph of data (PNG)", dest="graph_file")
 parser.add_argument("-png", help="file to save image (PNG)", dest="png_file")
 args = parser.parse_args()
 
+pixels = []
 camera = Camera()
 camera.open(args.port)
 camera.setExposure(args.exposure)
-camera.capture()
-pixels = camera.getPixels()
+camera.setBurst(args.frames, args.interval)
+camera.captureBurst()
+p = camera.getPixels()
+while p:
+    if args.quiet == False:
+        print(".", end="", flush=True)
+    pixels.append(p)
+    p = camera.getPixels()
 camera.close()
 
 if args.png_file:
     from PIL import Image
-    png = Image.new("L", (len(pixels), 1))
+    from itertools import chain
+    png = Image.new("L", (len(pixels[0]), args.frames))
+    flat = list(chain.from_iterable(pixels))
     if args.auto_scale == True:
-        max_val = max(pixels)
-        min_val = min(pixels)
+        max_val = max(flat)
+        print(max_val)
+        min_val = min(flat)
+        print(min_val)
         scale = 256/(max_val - min_val)
-        png.putdata(pixels, scale=scale, offset=-min_val*scale)
+        png.putdata(flat, scale=scale, offset=-min_val*scale)
     else:
-        png.putdata(pixels, scale=256/3000)
+        png.putdata(flat, scale=256/3000)
     png.save(args.png_file)
 
 if args.quiet == False or args.graph_file:
     import matplotlib
     import matplotlib.pyplot as plt
+    from mpl_toolkits.mplot3d import Axes3D
+    import numpy as np
 
     if args.quiet == True:
         matplotlib.use("Agg")
 
+    data = np.array(pixels)
+    length = data.shape[0]
+    width = data.shape[1]
+    x, y = np.meshgrid(np.arange(length), np.arange(width))
+
     fig = plt.figure()
-    ax1 = fig.add_subplot(1,1,1)
+    ax = fig.add_subplot(111, projection='3d')
     if args.auto_scale == False:
-        ax1.set_ylim((0, 3000), auto=False)
-    ax1.plot(pixels)
+        ax.set_zlim((0, 3000), auto=False)
+    ax.plot_surface(y, x, np.transpose(data))
 
     if args.graph_file:
         plt.savefig(args.graph_file, format="png")
