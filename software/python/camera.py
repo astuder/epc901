@@ -2,6 +2,7 @@
 
 import serial
 import sys
+import argparse
 from textwrap import wrap
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
@@ -49,8 +50,15 @@ def loop(i):
     ax1.set_ylim((0, 3000), auto=False)
     ax1.plot(yar)
 
-camera.open("COM4")
-camera.setExposure(1000)
+# read command line arguments
+# we expect camera.py -p <serial port> -e <exposure time in ms>
+parser = argparse.ArgumentParser(description="EPC901 camera 0.1")
+parser.add_argument("-p", help="serial port of camera, for example /dev/serial0 or COM3", dest="port", required=True)
+parser.add_argument("-e", help="exposure time in milliseconds", dest="exposure", default=1000)
+args = parser.parse_args()
+
+camera.open(args.port)
+camera.setExposure(args.exposure)
 
 fig = plt.figure()
 ax1 = fig.add_subplot(1,1,1)
