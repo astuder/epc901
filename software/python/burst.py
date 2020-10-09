@@ -38,9 +38,7 @@ if args.png_file:
     flat = list(chain.from_iterable(pixels))
     if args.auto_scale == True:
         max_val = max(flat)
-        print(max_val)
         min_val = min(flat)
-        print(min_val)
         scale = 256/(max_val - min_val)
         png.putdata(flat, scale=scale, offset=-min_val*scale)
     else:
