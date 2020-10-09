@@ -28,7 +28,7 @@ Camera::Camera() {
 	_exposure_time = 25;
 	_frame_buffer = 0;
 	_burst_enable = 0;
-	_burst_delay = 0;
+	_burst_interval = 0;
 	_burst_frames = 2;
 }
 
@@ -97,12 +97,12 @@ uint16_t Camera::getBurstFrames(void) {
 	return _burst_frames;
 }
 
-void Camera::setBurstDelay(uint16_t delay) {
-	_burst_delay = delay;
+void Camera::setBurstInterval(uint16_t interval) {
+	_burst_interval = interval;
 }
 
-uint16_t Camera::getBurstDelay(void) {
-	return _burst_delay;
+uint16_t Camera::getBurstInterval(void) {
+	return _burst_interval;
 }
 
 uint8_t Camera::capture(void) {
@@ -149,8 +149,8 @@ uint8_t Camera::capture(void) {
 		if (_burst_enable) {
 			burst_frame++;
 			// wait until it's time for the next frame
-			if (_burst_delay > 0) {
-				while (HAL_GetTick() - frame_time < _burst_delay);
+			if (_burst_interval > 0) {
+				while (HAL_GetTick() - frame_time < _burst_interval);
 			}
 		}
 	} while (_burst_enable && burst_frame < _burst_frames);

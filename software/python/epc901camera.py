@@ -33,7 +33,7 @@ class Camera:
         burst_str = "@burst frames {}\n".format(frames).encode("utf-8");
         self.ser.write(burst_str)
         self.ser.readline()     # ok
-        burst_str = "@burst delay {}\n".format(interval).encode("utf-8");
+        burst_str = "@burst interval {}\n".format(interval).encode("utf-8");
         self.ser.write(burst_str)
         self.ser.readline()     # ok
 

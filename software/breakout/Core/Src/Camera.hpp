@@ -37,8 +37,8 @@ public:
 	uint8_t getBurstEnable(void);
 	void setBurstFrames(uint16_t frames);
 	uint16_t getBurstFrames(void);
-	void setBurstDelay(uint16_t);
-	uint16_t getBurstDelay(void);
+	void setBurstInterval(uint16_t);
+	uint16_t getBurstInterval(void);
 
 	uint8_t capture(void);
 	void burst(uint16_t frame_count);
@@ -53,7 +53,7 @@ private:
 
 	uint8_t _burst_enable;
 	uint16_t _burst_frames;
-	uint16_t _burst_delay;		// time per frame in ms
+	uint16_t _burst_interval;		// time per frame in ms, 0=best effort
 
 	Frame* _frame_buffer;
 	uint16_t _frame_buf_size;

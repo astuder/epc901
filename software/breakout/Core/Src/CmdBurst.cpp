@@ -15,7 +15,7 @@ CmdBurst::CmdBurst(Camera* camera) {
 	init("burst",
 		 "\tburst <on|off>: Enable/disable burst mode.\r\n"
 		 "\tburst frames <count>: Set number of frames to take in a burst.\r\n"
-		 "\tburst delay <time_ms>: Set delay between frames in milliseconds.\r\n");
+		 "\tburst interval <time_ms>: Set interval in milliseconds at which frames are taken.\r\n");
 	_camera = camera;
 }
 
@@ -52,15 +52,15 @@ void CmdBurst::handler(Shell* shell) {
 		return;
 	}
 
-	if (0 == stricmp("delay", param)) {
+	if (0 == stricmp("interval", param)) {
 		param = shell->readParam();
 		if (!param) {
-			shell->writeInt(_camera->getBurstDelay());
+			shell->writeInt(_camera->getBurstInterval());
 			shell->newline();
 			return;
 		}
-		uint16_t delay = shell->paramToUInt(param);
-		_camera->setBurstDelay(delay);
+		uint16_t interval = shell->paramToUInt(param);
+		_camera->setBurstInterval(interval);
 		shell->ok();
 		return;
 	}
