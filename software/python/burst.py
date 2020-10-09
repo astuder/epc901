@@ -26,6 +26,7 @@ camera.setBurst(args.frames, args.interval)
 print("Recording images..")
 camera.captureBurst()
 print("Transfering image data", end="")
+camera.getPixels()          # discard first frame as it's noisier than subsequent frames
 p = camera.getPixels()
 while p:
     if args.quiet == False:
@@ -50,8 +51,9 @@ if args.png_file:
     png.save(args.png_file)
 
 if args.quiet == False or args.graph_file:
-    import matplotlib
+    
     import matplotlib.pyplot as plt
+    from matplotlib import cm
     from mpl_toolkits.mplot3d import Axes3D
     import numpy as np
 
@@ -69,7 +71,8 @@ if args.quiet == False or args.graph_file:
     ax.set_zlabel("brightness")
     if args.auto_scale == False:
         ax.set_zlim((0, 3000), auto=False)
-    ax.plot_surface(y, x, np.transpose(data))
+    ax.plot_surface(y, x, np.transpose(data),
+        cmap=cm.coolwarm, linewidth=0, antialiased=True)
 
     if args.graph_file:
         plt.savefig(args.graph_file, format="png")
