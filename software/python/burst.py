@@ -18,16 +18,20 @@ parser.add_argument("-png", help="file to save image (PNG)", dest="png_file")
 args = parser.parse_args()
 
 pixels = []
+timestamps = []
 camera = Camera()
 camera.open(args.port)
 camera.setExposure(args.exposure)
 camera.setBurst(args.frames, args.interval)
+print("Recording images..")
 camera.captureBurst()
+print("Transfering image data", end="")
 p = camera.getPixels()
 while p:
     if args.quiet == False:
         print(".", end="", flush=True)
     pixels.append(p)
+    timestamps.append(camera.frame_timestamp)
     p = camera.getPixels()
 camera.close()
 
@@ -55,12 +59,14 @@ if args.quiet == False or args.graph_file:
         matplotlib.use("Agg")
 
     data = np.array(pixels)
-    length = data.shape[0]
     width = data.shape[1]
-    x, y = np.meshgrid(np.arange(length), np.arange(width))
+    x, y = np.meshgrid(np.array(timestamps), np.arange(width))
 
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
+    ax.set_xlabel("pixel")
+    ax.set_ylabel("time ms")
+    ax.set_zlabel("brightness")
     if args.auto_scale == False:
         ax.set_zlim((0, 3000), auto=False)
     ax.plot_surface(y, x, np.transpose(data))
