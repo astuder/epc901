@@ -12,6 +12,7 @@ parser.add_argument("-e", help="exposure time in milliseconds", dest="exposure",
 parser.add_argument("-f", help="number of frames in burst", dest="frames", type=int, default=10)
 parser.add_argument("-i", help="interval in milliseconds between frames (0 = best effort)", dest="interval", type=int, default=0)
 parser.add_argument("-a", help="automatically scale based on image content", dest="auto_scale", action="store_true", default=False)
+parser.add_argument("-c", help="color map. currently only supports 'spectrum'", dest="color")
 parser.add_argument("-q", help="quiet mode, don't show window with graph", dest="quiet", action="store_true", default=False)
 parser.add_argument("-gpng", help="file to save graph of data (PNG)", dest="graph_file")
 parser.add_argument("-png", help="file to save image (PNG)", dest="png_file")
@@ -71,8 +72,14 @@ if args.quiet == False or args.graph_file:
     ax.set_zlabel("brightness")
     if args.auto_scale == False:
         ax.set_zlim((0, 3000), auto=False)
-    ax.plot_surface(y, x, np.transpose(data),
-        cmap=cm.coolwarm, linewidth=0, antialiased=True)
+
+    if args.color == "spectrum":
+        colors = plt.cm.nipy_spectral( (y-y.min())/float((y-y.min()).max()) )
+        ax.plot_surface(y, x, np.transpose(data),
+            facecolors=colors, shade=False, linewidth=0, antialiased=True)
+    else:
+        ax.plot_surface(y, x, np.transpose(data),
+            cmap=cm.coolwarm, linewidth=0, antialiased=True)
 
     if args.graph_file:
         plt.savefig(args.graph_file, format="png")
