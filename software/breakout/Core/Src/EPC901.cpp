@@ -158,8 +158,8 @@ void EPC901::_exposeImage(uint32_t exposure_us) {
 		spi->DR = (uint16_t) 0; \
 		READ_GPIO_Port->BSRR = (uint32_t)READ_Pin; \
 		while (!(spi->SR & SPI_FLAG_RXNE)); \
-		data_msb = *(__IO uint8_t *)&spi->DR; \
 		READ_GPIO_Port->BRR = (uint32_t)READ_Pin; \
+		data_msb = *(__IO uint8_t *)&spi->DR; \
 		while (!(spi->SR & SPI_FLAG_RXNE)); \
 		data_lsb = *(__IO uint8_t *)&spi->DR; \
 		ADC_CS_GPIO_Port->BSRR = (uint32_t)ADC_CS_Pin; \
