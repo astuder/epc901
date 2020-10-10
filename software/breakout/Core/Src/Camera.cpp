@@ -174,3 +174,7 @@ Frame* Camera::readFrame(void) {
 	return frame;
 }
 
+uint16_t Camera::getRemainingFrames(void) {
+	return _frame_count;
+}
+
