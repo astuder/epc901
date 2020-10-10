@@ -127,6 +127,7 @@ void EPC901::_exposeImage(uint32_t exposure_us) {
 //	DWT_Delay_us(1);
 //	HAL_GPIO_WritePin(CLR_PIX_GPIO_Port, CLR_PIX_Pin, GPIO_PIN_RESET);
 //	DWT_Delay_us(10);
+	// TODO: disable interrupts for very short exposure times (<100us?)
 	// open shutter
 	HAL_GPIO_WritePin(SHUTTER_GPIO_Port, SHUTTER_Pin, GPIO_PIN_SET);
 	// ~1us flush and ~1us shift with osc ~36MHz
