@@ -19,7 +19,7 @@ camera = Camera()
 camera.open(args.port)
 camera.setExposure(args.exposure)
 camera.capture()
-pixels = camera.getPixels()
+pixels = camera.getPixels(True)
 camera.close()
 
 if args.png_file:

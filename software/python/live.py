@@ -10,7 +10,7 @@ camera = Camera()
 
 def loop(i):
     camera.capture() 
-    yar = camera.getPixels()
+    yar = camera.getPixels(True)
     ax1.clear()
     if args.auto_scale == False:
         ax1.set_ylim((0, 3000), auto=False)

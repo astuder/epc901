@@ -49,8 +49,13 @@ class Camera:
         self.ser.write(b"@burst off\n")
         self.ser.readline()     # ok
 
-    def getPixels(self):
-        self.ser.write(b"@transfer\n")
+    def getPixels(self, last=False):
+        if last==True:
+            # get pixels of last frame, discard the others
+            self.ser.write(b"@transfer last\n")
+        else:
+            # get pixels of next frame in FIFO
+            self.ser.write(b"@transfer\n")
         frame_meta = self.ser.readline()     # frame number, timestamp, exposure
         if frame_meta.startswith(b"ERROR"):
             # no pixels available
