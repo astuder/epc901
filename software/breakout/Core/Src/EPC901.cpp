@@ -145,6 +145,26 @@ void EPC901::_exposeImage(uint32_t exposure_us) {
 	}
 }
 
+// Reading pixel from sensor using ADC on breakout board:
+//   set ADC CS low - sample HOLD
+//   start SPI transfer of 2 bytes from ADC
+//   set READ high
+//   wait for and read 1 byte from SPI/ADC
+//   set READ low
+//   wait for and read 1 byte from SPI/ADC (ADC automatically switches to SAMPLE on 13th bit)
+//   set ADC CS high
+#define __readADC() ({	\
+		ADC_CS_GPIO_Port->BRR = (uint32_t)ADC_CS_Pin; \
+		spi->DR = (uint16_t) 0; \
+		READ_GPIO_Port->BSRR = (uint32_t)READ_Pin; \
+		while (!(spi->SR & SPI_FLAG_RXNE)); \
+		data_msb = *(__IO uint8_t *)&spi->DR; \
+		READ_GPIO_Port->BRR = (uint32_t)READ_Pin; \
+		while (!(spi->SR & SPI_FLAG_RXNE)); \
+		data_lsb = *(__IO uint8_t *)&spi->DR; \
+		ADC_CS_GPIO_Port->BSRR = (uint32_t)ADC_CS_Pin; \
+		})
+
 uint16_t EPC901::_readImage(uint16_t* buffer) {
 	// read pulse
 	HAL_GPIO_WritePin(READ_GPIO_Port, READ_Pin, GPIO_PIN_SET);
@@ -155,43 +175,35 @@ uint16_t EPC901::_readImage(uint16_t* buffer) {
 	DWT_Delay_us(2);	// TODO: can be reduced to 1us with calibrated oscillator
 
 	// lock SPI handle
-	SPI_TypeDef* spi = _spi_handle->Instance;
 	__HAL_LOCK(_spi_handle);
+	SPI_TypeDef* spi = _spi_handle->Instance;
 
 	// read pixels
-	uint16_t pixel = 0;
-	uint16_t count = 0;
+	static const uint16_t pixel_cnt = 1024;		// TODO: Replace to support binning
+	uint16_t count;
 	uint8_t data_msb, data_lsb;
 
-	while (pixel < 1024) {
-		// ADC CS low - sample HOLD
-		ADC_CS_GPIO_Port->BRR = (uint32_t)ADC_CS_Pin;
-		// start transfer of 2 bytes from ADC
-		spi->DR = (uint16_t) 0;
-		// READ high
-		READ_GPIO_Port->BSRR = (uint32_t)READ_Pin;
-		// wait for and read 1 byte from ADC
-		while (!(spi->SR & SPI_FLAG_RXNE));
-		data_msb = *(__IO uint8_t *)&spi->DR;
-		// READ low
-		READ_GPIO_Port->BRR = (uint32_t)READ_Pin;
-		// wait for and read 1 byte from ADC (ADC switches to SAMPLE on 13th bit)
-		while (!(spi->SR & SPI_FLAG_RXNE));
-		data_lsb = *(__IO uint8_t *)&spi->DR;
-		// ADC CS high
-		ADC_CS_GPIO_Port->BSRR = (uint32_t)ADC_CS_Pin;
-		if (count < 4) {
-			// discard first 4 samples (3 pre-loading cycles, 1 ADC sample/conversion pipeline)
-		} else {
-			// store pixel
-			buffer[pixel] = (data_msb << 7) | (data_lsb >> 1);
-			pixel++;
-		}
-		count++;
-	}
+	// discard first 4 samples (3 pre-loading cycles, 1 ADC sample/conversion pipeline)
+	count = 4;
+	do {
+		__readADC();
+		count--;
+	} while (count != 0);
+
+	// read pixels
+	count = pixel_cnt;
+	do {
+		__readADC();
+		// store pixel
+		*buffer = (data_msb << 7) | (data_lsb >> 1);
+		buffer++;
+		count--;
+	} while (count != 0);
+
+	// TODO: don't wiggle READ when reading last pixel
 
 	// release SPI peripheral
 	__HAL_UNLOCK(_spi_handle);
 
-	return pixel;
+	return pixel_cnt;
 }
