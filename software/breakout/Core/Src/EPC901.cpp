@@ -35,9 +35,18 @@ uint8_t EPC901::init(I2C_HandleTypeDef* i2c_handle, uint8_t i2c_addr, SPI_Handle
 	HAL_GPIO_WritePin(READ_GPIO_Port, READ_Pin, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(ADC_CS_GPIO_Port, ADC_CS_Pin, GPIO_PIN_SET);
 
+	// configure and enable SPI peripheral
+	__HAL_LOCK(_spi_handle);
+	SET_BIT(_spi_handle->Instance->CR2, SPI_RXFIFO_THRESHOLD);
+	__HAL_SPI_ENABLE(_spi_handle);
+	__HAL_UNLOCK(_spi_handle);
+
+	// init sensor
+
 	_powerUp();
 
 	// read chip revision
+
 	uint8_t revision;
 	if (HAL_OK == HAL_I2C_Mem_Read(_i2c_handle, EPC_I2C_ADDR, 0xff, 1, &revision, 1, 100)) {
 		_chip_rev = revision;
@@ -47,6 +56,7 @@ uint8_t EPC901::init(I2C_HandleTypeDef* i2c_handle, uint8_t i2c_addr, SPI_Handle
 	}
 
 	// TODO: oscillator calibration
+	// may be negligible for exposure times >1us
 
 	_powerDown();
 
@@ -142,28 +152,29 @@ uint16_t EPC901::_readImage(uint16_t* buffer) {
 	HAL_GPIO_WritePin(READ_GPIO_Port, READ_Pin, GPIO_PIN_RESET);
 	// wait for conversion (37-3 osc cycles) - ~1us with osc ~36MHz
 	DWT_Delay_us(2);	// TODO: can be reduced to 1us with calibrated oscillator
+
+	// lock SPI handle
+	SPI_TypeDef* spi = _spi_handle->Instance;
+	__HAL_LOCK(_spi_handle);
+
 	// read pixels
 	uint16_t pixel = 0;
 	uint16_t count = 0;
 	uint8_t data_msb, data_lsb;
-	// enable SPI peripheral
-	SPI_TypeDef* spi = _spi_handle->Instance;
-	__HAL_LOCK(_spi_handle);
-	SET_BIT(spi->CR2, SPI_RXFIFO_THRESHOLD);
-	spi->CR1 |= 0x1 << 6;
+
 	while (pixel < 1024) {
 		// ADC CS low - sample HOLD
 		ADC_CS_GPIO_Port->BRR = (uint32_t)ADC_CS_Pin;
+		// start transfer of 2 bytes from ADC
+		spi->DR = (uint16_t) 0;
 		// READ high
 		READ_GPIO_Port->BSRR = (uint32_t)READ_Pin;
-		// read 1 byte from ADC
-		*(__IO uint8_t *)&spi->DR = 0;
+		// wait for and read 1 byte from ADC
 		while (!(spi->SR & SPI_FLAG_RXNE));
 		data_msb = *(__IO uint8_t *)&spi->DR;
 		// READ low
 		READ_GPIO_Port->BRR = (uint32_t)READ_Pin;
-		// read 1 byte from ADC (ADC switches to SAMPLE on 13th bit)
-		*(__IO uint8_t *)&spi->DR = 0;
+		// wait for and read 1 byte from ADC (ADC switches to SAMPLE on 13th bit)
 		while (!(spi->SR & SPI_FLAG_RXNE));
 		data_lsb = *(__IO uint8_t *)&spi->DR;
 		// ADC CS high
@@ -178,7 +189,7 @@ uint16_t EPC901::_readImage(uint16_t* buffer) {
 		count++;
 	}
 
-	// disable SPI peripheral
+	// release SPI peripheral
 	__HAL_UNLOCK(_spi_handle);
 
 	return pixel;

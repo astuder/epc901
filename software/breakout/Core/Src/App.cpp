@@ -20,7 +20,7 @@ const char chiprev_str[] = "ECP901 rev ";
 const char new_line[] = "\n\r";
 const char comma[] = ", ";
 
-#define BUFFERED_FRAMES 50
+#define BUFFERED_FRAMES 100
 
 Frame frame_buffer[BUFFERED_FRAMES];
 
