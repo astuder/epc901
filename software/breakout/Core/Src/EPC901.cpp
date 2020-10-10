@@ -164,6 +164,17 @@ void EPC901::_exposeImage(uint32_t exposure_us) {
 		data_lsb = *(__IO uint8_t *)&spi->DR; \
 		ADC_CS_GPIO_Port->BSRR = (uint32_t)ADC_CS_Pin; \
 		})
+// don't clock READ during last ADC conversion
+#define __finishADC() ({	\
+		ADC_CS_GPIO_Port->BRR = (uint32_t)ADC_CS_Pin; \
+		spi->DR = (uint16_t) 0; \
+		while (!(spi->SR & SPI_FLAG_RXNE)); \
+		data_msb = *(__IO uint8_t *)&spi->DR; \
+		while (!(spi->SR & SPI_FLAG_RXNE)); \
+		data_lsb = *(__IO uint8_t *)&spi->DR; \
+		ADC_CS_GPIO_Port->BSRR = (uint32_t)ADC_CS_Pin; \
+		})
+
 
 uint16_t EPC901::_readImage(uint16_t* buffer) {
 	// read pulse
@@ -191,7 +202,7 @@ uint16_t EPC901::_readImage(uint16_t* buffer) {
 	} while (count != 0);
 
 	// read pixels
-	count = pixel_cnt;
+	count = pixel_cnt - 1;
 	do {
 		__readADC();
 		// store pixel
@@ -200,7 +211,9 @@ uint16_t EPC901::_readImage(uint16_t* buffer) {
 		count--;
 	} while (count != 0);
 
-	// TODO: don't wiggle READ when reading last pixel
+	// Don't wiggle READ when reading last pixel
+	__finishADC();
+	*buffer = (data_msb << 7) | (data_lsb >> 1);
 
 	// release SPI peripheral
 	__HAL_UNLOCK(_spi_handle);
