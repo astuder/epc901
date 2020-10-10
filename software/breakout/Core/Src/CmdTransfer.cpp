@@ -50,7 +50,7 @@ void CmdTransfer::handler(Shell* shell) {
 		shell->newline();
 		int i = 0;
 		while (i < Frame::PIXEL_COUNT) {
-			shell->writeHex(frame->pixels[i], 4);
+			shell->writeHex(frame->pixels[i], 3);
 			i++;
 		}
 		shell->newline();

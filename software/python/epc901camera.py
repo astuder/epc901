@@ -60,5 +60,5 @@ class Camera:
             self.frame_number = int(a)
             self.frame_timestamp = int(b)
             self.frame_exposure = int(c)
-        frame_data = [int(x, 16) for x in wrap(self.ser.readline().decode("utf-8"), 4)]
+        frame_data = [int(x, 16) for x in wrap(self.ser.readline().decode("utf-8"), 3)]
         return frame_data
