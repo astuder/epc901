@@ -32,9 +32,9 @@ CmdRegRead cmd_regread = CmdRegRead(&sensor);
 CmdRegWrite cmd_regwrite = CmdRegWrite(&sensor);
 CmdReset cmd_reset = CmdReset(&sensor);
 
-void App_Setup(I2C_HandleTypeDef* hi2c, UART_HandleTypeDef* huart, SPI_HandleTypeDef* hspi) {
+void App_Setup(I2C_HandleTypeDef* hi2c, UART_HandleTypeDef* huart, SPI_HandleTypeDef* hspi, TIM_HandleTypeDef* htim) {
 	Leds::clearAll();
-	sensor.init(hi2c, 0x15, hspi);
+	sensor.init(hi2c, 0x15, hspi, htim);
 	shell.init(huart);
 	shell.registerCmd(&cmd_regread);
 	shell.registerCmd(&cmd_regwrite);

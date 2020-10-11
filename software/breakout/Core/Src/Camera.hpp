@@ -33,6 +33,7 @@ public:
 
 	void setExposureTime(uint32_t time_us);
 	uint32_t getExposureTime(void);
+	uint32_t getMaxExposureTime(void);
 	void setBurstEnable(uint8_t enable);
 	uint8_t getBurstEnable(void);
 	void setBurstFrames(uint16_t frames);

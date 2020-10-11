@@ -65,12 +65,20 @@ void Camera::setExposureTime(uint32_t time_us) {
 	if (time_us == 0) {
 		// TODO: determine exposure automatically
 	} else {
-		_exposure_time = time_us;
+		if (time_us > 0 && time_us <= EPC901::getMaxExposure()) {
+			_exposure_time = time_us;
+		} else {
+			// ignore invalid values
+		}
 	}
 }
 
 uint32_t Camera::getExposureTime(void) {
 	return _exposure_time;
+}
+
+uint32_t Camera::getMaxExposureTime(void) {
+	return EPC901::getMaxExposure();
 }
 
 void Camera::setBurstEnable(uint8_t enable) {

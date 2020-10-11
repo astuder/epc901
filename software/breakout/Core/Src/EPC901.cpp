@@ -22,16 +22,16 @@ EPC901::EPC901() {
 EPC901::~EPC901() {
 }
 
-uint8_t EPC901::init(I2C_HandleTypeDef* i2c_handle, uint8_t i2c_addr, SPI_HandleTypeDef* spi_handle) {
+uint8_t EPC901::init(I2C_HandleTypeDef* i2c_handle, uint8_t i2c_addr, SPI_HandleTypeDef* spi_handle, TIM_HandleTypeDef* tim_handle) {
 	_i2c_handle = i2c_handle;
 	_i2c_addr = i2c_addr << 1;
 	_spi_handle = spi_handle;
+	_tim_handle = tim_handle;
 
 	// set all pins to sane defaults
 	HAL_GPIO_WritePin(PWR_DOWN_GPIO_Port, PWR_DOWN_Pin, GPIO_PIN_SET);
 	HAL_GPIO_WritePin(CLR_DATA_GPIO_Port, CLR_DATA_Pin, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(CLR_PIX_GPIO_Port, CLR_PIX_Pin, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(SHUTTER_GPIO_Port, SHUTTER_Pin, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(READ_GPIO_Port, READ_Pin, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(ADC_CS_GPIO_Port, ADC_CS_Pin, GPIO_PIN_SET);
 
@@ -64,6 +64,9 @@ uint8_t EPC901::init(I2C_HandleTypeDef* i2c_handle, uint8_t i2c_addr, SPI_Handle
 }
 
 uint16_t EPC901::captureImage(uint32_t exposure_us, uint16_t* buffer) {
+	if (exposure_us > _max_exposure_us) {
+		return 0;
+	}
 	_powerUp();
 	_exposeImage(exposure_us);
 	uint16_t pixels = _readImage(buffer);
@@ -127,22 +130,28 @@ void EPC901::_exposeImage(uint32_t exposure_us) {
 //	DWT_Delay_us(1);
 //	HAL_GPIO_WritePin(CLR_PIX_GPIO_Port, CLR_PIX_Pin, GPIO_PIN_RESET);
 //	DWT_Delay_us(10);
-	// TODO: disable interrupts for very short exposure times (<100us?)
-	// open shutter
-	HAL_GPIO_WritePin(SHUTTER_GPIO_Port, SHUTTER_Pin, GPIO_PIN_SET);
-	// ~1us flush and ~1us shift with osc ~36MHz
-	if (exposure_us != 0) {
-		DWT_Delay_us(exposure_us);
+
+	// calculate exposure in clk ticks
+	uint32_t exposure_clk = exposure_us * 80;
+	// set prescaler
+	if (exposure_clk >= 0xffffff) {
+		exposure_clk = exposure_clk >> 16;
+		__HAL_TIM_SET_PRESCALER(_tim_handle, 0xffff);
+	} else if (exposure_clk >= 0xffff) {
+		exposure_clk = exposure_clk >> 8;
+		__HAL_TIM_SET_PRESCALER(_tim_handle, 0xff);
 	} else {
-		DWT_Delay_us(1);
+		__HAL_TIM_SET_PRESCALER(_tim_handle, 0);
 	}
-	// close shutter
-	HAL_GPIO_WritePin(SHUTTER_GPIO_Port, SHUTTER_Pin, GPIO_PIN_RESET);
-	// wait for data ready
-	while (GPIO_PIN_RESET == HAL_GPIO_ReadPin(DATA_RDY_GPIO_Port, DATA_RDY_Pin)) {
-		// TODO: timeout?
-		// break; // no sensor yet
-	}
+	// set pulse_start
+	_tim_handle->Instance->CCR1 = 1;
+	// set pulse end
+	_tim_handle->Instance->ARR = 1 + exposure_clk;
+	// start pulse
+	HAL_TIM_OnePulse_Start(_tim_handle, TIM_CHANNEL_1);
+	__HAL_TIM_ENABLE(_tim_handle);
+
+	// timer stops automatically when done
 }
 
 // Reading pixel from sensor using ADC on breakout board:
@@ -177,6 +186,11 @@ void EPC901::_exposeImage(uint32_t exposure_us) {
 
 
 uint16_t EPC901::_readImage(uint16_t* buffer) {
+	// wait for data ready
+	while (GPIO_PIN_RESET == HAL_GPIO_ReadPin(DATA_RDY_GPIO_Port, DATA_RDY_Pin)) {
+		// TODO: timeout?
+	}
+
 	// read pulse
 	HAL_GPIO_WritePin(READ_GPIO_Port, READ_Pin, GPIO_PIN_SET);
 	// wait 3 osc cycles - ~0.1us with osc ~36MHz
