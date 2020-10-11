@@ -4,9 +4,9 @@ EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 1
-Title "Breakout-Shield-Adapter"
-Date "lun. 30 mars 2015"
-Rev "Rev A"
+Title "epc901 Breakout to Shield Adapter"
+Date ""
+Rev "A"
 Comp ""
 Comment1 ""
 Comment2 ""
