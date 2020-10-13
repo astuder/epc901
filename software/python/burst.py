@@ -11,6 +11,7 @@ parser.add_argument("-p", help="serial port of camera, for example /dev/serial0 
 parser.add_argument("-e", help="exposure time in milliseconds", dest="exposure", type=int, default=1000)
 parser.add_argument("-f", help="number of frames in burst", dest="frames", type=int, default=10)
 parser.add_argument("-i", help="interval in milliseconds between frames (0 = best effort)", dest="interval", type=int, default=0)
+parser.add_argument("-fast", help="enable fast burst mode", action="store_true", default=False)
 parser.add_argument("-a", help="automatically scale based on image content", dest="auto_scale", action="store_true", default=False)
 parser.add_argument("-c", help="color map. currently only supports 'spectrum'", dest="color")
 parser.add_argument("-q", help="quiet mode, don't show window with graph", dest="quiet", action="store_true", default=False)
@@ -25,9 +26,8 @@ camera.open(args.port)
 camera.setExposure(args.exposure)
 camera.setBurst(args.frames, args.interval)
 print("Recording images..")
-camera.captureBurst()
+camera.captureBurst(args.fast)
 print("Transfering image data", end="")
-camera.getPixels()          # discard first frame as it's noisier than subsequent frames
 p = camera.getPixels()
 while p:
     if args.quiet == False:

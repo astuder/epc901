@@ -28,6 +28,7 @@ Camera::Camera() {
 	_exposure_time = 25;
 	_frame_buffer = 0;
 	_burst_enable = 0;
+	_burst_fast = 0;
 	_burst_interval = 0;
 	_burst_frames = 2;
 }
@@ -93,6 +94,18 @@ uint8_t Camera::getBurstEnable(void) {
 	return _burst_enable;
 }
 
+void Camera::setBurstFast(uint8_t fast) {
+	if (0 == fast) {
+		_burst_fast = 0;
+	} else {
+		_burst_fast = 1;
+	}
+}
+
+uint8_t Camera::getBurstFast(void) {
+	return _burst_fast;
+}
+
 void Camera::setBurstFrames(uint16_t frames) {
 	if (frames > _frame_buf_size) {
 		_burst_frames = _frame_buf_size;
@@ -131,39 +144,90 @@ uint8_t Camera::capture(void) {
 		}
 	}
 
+	uint32_t frame_time, prev_frame_time = 0;
+	uint16_t pixels;
+
 	if (_frame_count == 0) {
 		_start_time = HAL_GetTick();
 	}
 
-	do {
-		uint32_t frame_time = HAL_GetTick();
+	if (!_burst_enable || _burst_frames < 2) {
+		// capture a single frame
+		frame_time = HAL_GetTick();
+		_sensor->captureImage(_exposure_time, _frame_buffer[_frame_write].pixels);
+		_commitFrame(frame_time);
+	} else {
+		// capture multiple frames in a burst
+		// using low-level API of sensor class for maximum control
+		_sensor->_powerUp();
+		_sensor->_clear();
 
-		_frame_buffer[_frame_write].number = _frame_count;
-		_frame_buffer[_frame_write].exposure_time = _exposure_time;
-		_frame_buffer[_frame_write].timestamp = frame_time - _start_time;
-		uint16_t pixels = _sensor->captureImage(_exposure_time, _frame_buffer[_frame_write].pixels);
-
-		if (pixels == 0) {
-			// failed to capture image
-			return 1;
+		if (_burst_fast) {
+			// in fast burst, the next image is captured while the previous image is read out
+			// capture first image of fast burst without reading it
+			prev_frame_time = HAL_GetTick();
+			_sensor->_exposeImage(_exposure_time);
+			if (_burst_interval > 0) {
+				while (HAL_GetTick() - prev_frame_time < _burst_interval);
+			}
+			burst_frame++;
 		}
 
-		_frame_count++;
-		_frame_write++;
-		if (_frame_write >= _frame_buf_size) {
-			_frame_write = 0;
-		}
+		do {
+			if (_burst_fast) {
+				// we must wait for exposure to be complete before starting a new one
+				while(!_sensor->_dataReady());
+				frame_time = prev_frame_time;
+				prev_frame_time = HAL_GetTick();
+			} else {
+				frame_time = HAL_GetTick();
+			}
+			_sensor->_exposeImage(_exposure_time);
 
-		if (_burst_enable) {
+			pixels = _sensor->_readImage(_frame_buffer[_frame_write].pixels);
+
+			if (pixels == 0) {
+				// failed to capture image
+				_sensor->_powerDown();
+				return 1;
+			}
+
+			_commitFrame(frame_time);
+
 			burst_frame++;
 			// wait until it's time for the next frame
 			if (_burst_interval > 0) {
 				while (HAL_GetTick() - frame_time < _burst_interval);
 			}
+		} while (burst_frame < _burst_frames);
+
+		if (_burst_fast) {
+			// read out last image of fast burst
+			pixels = _sensor->_readImage(_frame_buffer[_frame_write].pixels);
+			if (pixels == 0) {
+				// failed to capture image
+				_sensor->_powerDown();
+				return 1;
+			}
+			_commitFrame(prev_frame_time);
 		}
-	} while (_burst_enable && burst_frame < _burst_frames);
+
+		_sensor->_powerDown();
+	}
 
 	return 0;
+}
+
+void Camera::_commitFrame(uint32_t timestamp) {
+	_frame_buffer[_frame_write].number = _frame_count;
+	_frame_buffer[_frame_write].exposure_time = _exposure_time;
+	_frame_buffer[_frame_write].timestamp = timestamp - _start_time;
+
+	_frame_count++;
+	_frame_write++;
+	if (_frame_write >= _frame_buf_size) {
+		_frame_write = 0;
+	}
 }
 
 Frame* Camera::readFrame(void) {

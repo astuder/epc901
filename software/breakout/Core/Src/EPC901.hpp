@@ -25,11 +25,15 @@ public:
 	uint8_t writeRegister(uint8_t address, uint8_t value);
 	uint8_t reset(void);
 
-private:
+	// low-level API
 	void _powerUp();
 	void _powerDown();
+	void _clear();
 	void _exposeImage(uint32_t exposure_us);
 	uint16_t _readImage(uint16_t* buffer);
+	uint8_t _dataReady();
+
+private:
 
 	SPI_HandleTypeDef* _spi_handle;
 	I2C_HandleTypeDef* _i2c_handle;

@@ -36,6 +36,8 @@ public:
 	uint32_t getMaxExposureTime(void);
 	void setBurstEnable(uint8_t enable);
 	uint8_t getBurstEnable(void);
+	void setBurstFast(uint8_t enable);
+	uint8_t getBurstFast(void);
 	void setBurstFrames(uint16_t frames);
 	uint16_t getBurstFrames(void);
 	void setBurstInterval(uint16_t);
@@ -48,11 +50,14 @@ public:
 	uint16_t getRemainingFrames();
 
 private:
+	void _commitFrame(uint32_t timestamp);
+
 	EPC901* _sensor;
 	uint32_t _exposure_time;
 	uint32_t _start_time;
 
 	uint8_t _burst_enable;
+	uint8_t _burst_fast;
 	uint16_t _burst_frames;
 	uint16_t _burst_interval;		// time per frame in ms, 0=best effort
 

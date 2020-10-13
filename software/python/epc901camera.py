@@ -40,8 +40,11 @@ class Camera:
     def capture(self):
         self.sendCommand("capture")
 
-    def captureBurst(self):
-        self.sendCommand("burst on")
+    def captureBurst(self, fast=False):
+        if fast==True:
+            self.sendCommand("burst fast")
+        else:
+            self.sendCommand("burst on")
         self.sendCommand("capture")
         self.sendCommand("burst off")
 

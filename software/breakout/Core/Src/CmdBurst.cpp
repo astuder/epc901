@@ -13,7 +13,7 @@
 
 CmdBurst::CmdBurst(Camera* camera) {
 	init("burst",
-		 "\tburst <on|off>: Enable/disable burst mode.\r\n"
+		 "\tburst <on|fast|off>: Enable/disable burst mode.\r\n"
 		 "\tburst frames <count>: Set number of frames to take in a burst.\r\n"
 		 "\tburst interval <time_ms>: Set interval in milliseconds at which frames are taken.\r\n");
 	_camera = camera;
@@ -32,7 +32,11 @@ void CmdBurst::handler(Shell* shell) {
 	const char* param = shell->readParam();
 	if (!param) {
 		if (_camera->getBurstEnable()) {
-			shell->writeString("ON");
+			if (_camera->getBurstFast()) {
+				shell->writeString("FAST");
+			} else {
+				shell->writeString("ON");
+			}
 		} else {
 			shell->writeString("OFF");
 		}
@@ -42,12 +46,21 @@ void CmdBurst::handler(Shell* shell) {
 
 	if (0 == stricmp("on", param)) {
 		_camera->setBurstEnable(1);
+		_camera->setBurstFast(0);
+		shell->ok();
+		return;
+	}
+
+	if (0 == stricmp("fast", param)) {
+		_camera->setBurstEnable(1);
+		_camera->setBurstFast(1);
 		shell->ok();
 		return;
 	}
 
 	if (0 == stricmp("off", param)) {
 		_camera->setBurstEnable(0);
+		_camera->setBurstFast(0);
 		shell->ok();
 		return;
 	}

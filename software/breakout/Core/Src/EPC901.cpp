@@ -71,6 +71,7 @@ uint16_t EPC901::captureImage(uint32_t exposure_us, uint16_t* buffer) {
 		return 0;
 	}
 	_powerUp();
+	_clear();
 	_exposeImage(exposure_us);
 	uint16_t pixels = _readImage(buffer);
 	_powerDown();
@@ -122,18 +123,25 @@ void EPC901::_powerDown() {
 	HAL_GPIO_WritePin(PWR_DOWN_GPIO_Port, PWR_DOWN_Pin, GPIO_PIN_SET);
 }
 
-void EPC901::_exposeImage(uint32_t exposure_us) {
+void EPC901::_clear() {
+/* clear data causes issues, it looks like READ is never asserted on next exposure
 	// clear data (necessary when using power-down?)
-//	HAL_GPIO_WritePin(CLR_DATA_GPIO_Port, CLR_DATA_Pin, GPIO_PIN_SET);
-//	DWT_Delay_us(1);
-//	HAL_GPIO_WritePin(CLR_DATA_GPIO_Port, CLR_DATA_Pin, GPIO_PIN_RESET);
-//	DWT_Delay_us(10);
+	HAL_GPIO_WritePin(CLR_DATA_GPIO_Port, CLR_DATA_Pin, GPIO_PIN_SET);
+	DWT_Delay_us(1);
+	HAL_GPIO_WritePin(CLR_DATA_GPIO_Port, CLR_DATA_Pin, GPIO_PIN_RESET);
+	DWT_Delay_us(10);
 	// clear pixels (necessary when using power-down?)
-//	HAL_GPIO_WritePin(CLR_PIX_GPIO_Port, CLR_PIX_Pin, GPIO_PIN_SET);
-//	DWT_Delay_us(1);
-//	HAL_GPIO_WritePin(CLR_PIX_GPIO_Port, CLR_PIX_Pin, GPIO_PIN_RESET);
-//	DWT_Delay_us(10);
+	HAL_GPIO_WritePin(CLR_PIX_GPIO_Port, CLR_PIX_Pin, GPIO_PIN_SET);
+	DWT_Delay_us(1);
+	HAL_GPIO_WritePin(CLR_PIX_GPIO_Port, CLR_PIX_Pin, GPIO_PIN_RESET);
+	DWT_Delay_us(10);
+*/
+	// reset as workaround to flush accumulated charge
+	uint8_t val = 6;
+	HAL_I2C_Master_Transmit(_i2c_handle, 0, &val, 1, 100);
+}
 
+void EPC901::_exposeImage(uint32_t exposure_us) {
 	// calculate exposure in clk ticks
 	uint32_t exposure_clk = exposure_us * 80;
 	// set prescaler
@@ -235,4 +243,8 @@ uint16_t EPC901::_readImage(uint16_t* buffer) {
 	__HAL_UNLOCK(_spi_handle);
 
 	return pixel_cnt;
+}
+
+uint8_t EPC901::_dataReady() {
+	return GPIO_PIN_SET == HAL_GPIO_ReadPin(DATA_RDY_GPIO_Port, DATA_RDY_Pin);
 }
