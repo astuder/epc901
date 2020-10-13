@@ -8,7 +8,7 @@ class Camera:
     ser = serial.Serial()
     def open(self, port, speed=115200):
         try:
-            self.ser = serial.Serial(port, speed, timeout=1)            
+            self.ser = serial.Serial(port, speed, timeout=30)            
             self.sendCommand("echo off")
             while self.ser.in_waiting:
                 self.ser.readline()     # flush any extra lines
