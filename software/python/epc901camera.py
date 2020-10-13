@@ -8,60 +8,54 @@ class Camera:
     ser = serial.Serial()
     def open(self, port, speed=115200):
         try:
-            self.ser = serial.Serial(port, speed, timeout=1)
-            self.ser.write(b"@echo off\n")
-            self.ser.readline()
-            self.ser.readline()
-            self.ser.write(b"@reset sensor\n")
-            self.ser.readline()     # ok
+            self.ser = serial.Serial(port, speed, timeout=1)            
+            self.sendCommand("echo off")
+            while self.ser.in_waiting:
+                self.ser.readline()     # flush any extra lines
+            self.sendCommand("reset sensor")
         except Exception as e:
             print("Failed to connect to sensor on port ", port)
             print("Exception: " + str(e))
             sys.exit()
 
     def close(self):
-        self.ser.write(b"@echo on\n")
-        self.ser.readline()
+        self.sendCommand("echo on")
         self.ser.close()
 
+    def sendCommand(self, command):
+        cmd_str = "@{}\n".format(command).encode("utf-8")
+        self.ser.write(cmd_str)
+        return self.ser.readline().decode("utf-8")
+
     def setExposure(self, exposure):
-        exposure_str = "@exposure {}\n".format(exposure).encode("utf-8");
-        self.ser.write(exposure_str)
-        self.ser.readline()     # ok
+        exposure_str = "exposure {}".format(exposure)
+        self.sendCommand(exposure_str)
 
     def setBurst(self, frames, interval):
-        burst_str = "@burst frames {}\n".format(frames).encode("utf-8");
-        self.ser.write(burst_str)
-        self.ser.readline()     # ok
-        burst_str = "@burst interval {}\n".format(interval).encode("utf-8");
-        self.ser.write(burst_str)
-        self.ser.readline()     # ok
+        burst_str = "burst frames {}".format(frames)
+        self.sendCommand(burst_str)
+        burst_str = "burst interval {}".format(interval)
+        self.sendCommand(burst_str)
 
     def capture(self):
-        self.ser.write(b"@capture\n")
-        self.ser.readline()     # ok
+        self.sendCommand("capture")
 
     def captureBurst(self):
-        self.ser.write(b"@burst on\n")
-        self.ser.readline()     # ok
-        self.ser.write(b"@capture\n")
-        self.ser.readline()     # ok
-        self.ser.write(b"@burst off\n")
-        self.ser.readline()     # ok
+        self.sendCommand("burst on")
+        self.sendCommand("capture")
+        self.sendCommand("burst off")
 
     def getPixels(self, last=False):
+        transfer_cmd = "transfer"
         if last==True:
             # get pixels of last frame, discard the others
-            self.ser.write(b"@transfer last\n")
-        else:
-            # get pixels of next frame in FIFO
-            self.ser.write(b"@transfer\n")
-        frame_meta = self.ser.readline()     # frame number, timestamp, exposure
-        if frame_meta.startswith(b"ERROR"):
+            transfer_cmd = "transfer last"
+        frame_meta = self.sendCommand(transfer_cmd) # frame number, timestamp, exposure
+        if frame_meta is None or frame_meta.startswith("ERROR"):
             # no pixels available
             return
         else:
-            a, b, c = frame_meta.split(b",")
+            a, b, c = frame_meta.split(",")
             self.frame_number = int(a)
             self.frame_timestamp = int(b)
             self.frame_exposure = int(c)
