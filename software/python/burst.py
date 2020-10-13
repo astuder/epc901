@@ -17,6 +17,7 @@ parser.add_argument("-c", help="color map. currently only supports 'spectrum'", 
 parser.add_argument("-q", help="quiet mode, don't show window with graph", dest="quiet", action="store_true", default=False)
 parser.add_argument("-gpng", help="file to save graph of data (PNG)", dest="graph_file")
 parser.add_argument("-png", help="file to save image (PNG)", dest="png_file")
+parser.add_argument("-csv", help="file to save data (CSV)", dest="csv_file")
 args = parser.parse_args()
 
 pixels = []
@@ -30,8 +31,7 @@ camera.captureBurst(args.fast)
 print("Transfering image data", end="")
 p = camera.getPixels()
 while p:
-    if args.quiet == False:
-        print(".", end="", flush=True)
+    print(".", end="", flush=True)
     pixels.append(p)
     timestamps.append(camera.frame_timestamp)
     p = camera.getPixels()
@@ -50,6 +50,21 @@ if args.png_file:
     else:
         png.putdata(flat, scale=256/3000)
     png.save(args.png_file)
+
+if args.csv_file:
+    try:
+        with open(args.csv_file, 'w') as csv:
+            csv.write("frame,time ms")
+            for p in range(len(pixels[0])):
+                csv.write(",{}".format(p))
+            csv.write("\n")
+            for f in range(args.frames):
+                csv.write("{},{}".format(f,timestamps[f]))
+                for p in range(len(pixels[0])):
+                    csv.write(",{}".format(pixels[f][p]))
+                csv.write("\n")
+    except:
+        print("Failed opening CSV file for writing data.")
 
 if args.quiet == False or args.graph_file:
     

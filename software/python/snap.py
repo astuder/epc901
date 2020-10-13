@@ -13,6 +13,7 @@ parser.add_argument("-a", help="automatically scale based on image content", des
 parser.add_argument("-q", help="quiet mode, don't show window with graph", dest="quiet", action="store_true", default=False)
 parser.add_argument("-gpng", help="file to save graph of data (PNG)", dest="graph_file")
 parser.add_argument("-png", help="file to save image (PNG)", dest="png_file")
+parser.add_argument("-csv", help="file to save data (CSV)", dest="csv_file")
 args = parser.parse_args()
 
 camera = Camera()
@@ -33,6 +34,14 @@ if args.png_file:
     else:
         png.putdata(pixels, scale=256/3000)
     png.save(args.png_file)
+
+if args.csv_file:
+    try:
+        with open(args.csv_file, 'w') as csv:
+            for p in pixels:
+                csv.write("{}\n".format(p))
+    except:
+        print("Failed opening CSV file for writing data.")
 
 if args.quiet == False or args.graph_file:
     import matplotlib
