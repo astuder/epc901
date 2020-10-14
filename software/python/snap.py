@@ -38,8 +38,13 @@ if args.png_file:
 if args.csv_file:
     try:
         with open(args.csv_file, 'w') as csv:
+            x = 0;
             for p in pixels:
-                csv.write("{}\n".format(p))
+                if x == 0:
+                    csv.write("{}".format(p))
+                else:
+                    csv.write(",{}".format(p))
+                x += 1
     except:
         print("Failed opening CSV file for writing data.")
 

@@ -83,7 +83,7 @@ if args.graph_type == 2:
 
         fig = plt.figure()    
         ax1 = fig.add_subplot(1,1,1)
-        ani = animation.FuncAnimation(fig, graph_loop, interval=200)
+        ani = animation.FuncAnimation(fig, graph_loop, interval=200, save_count=args.frames)
         if args.graph_file:
             print("Saving animation to GIF")
             ani.save(args.graph_file, writer="pillow", fps=5)
