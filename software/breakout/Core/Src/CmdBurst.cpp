@@ -29,6 +29,12 @@ void CmdBurst::handler(Shell* shell) {
 		return;
 	}
 
+	if (_camera->getState() != Camera::ST_IDLE) {
+		shell->writeString("BUSY");
+		shell->newline();
+		return;
+	}
+
 	const char* param = shell->readParam();
 	if (!param) {
 		if (_camera->getBurstEnable()) {

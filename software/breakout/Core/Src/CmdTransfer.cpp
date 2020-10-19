@@ -30,6 +30,12 @@ void CmdTransfer::handler(Shell* shell) {
 		return;
 	}
 
+	if (_camera->getState() != Camera::ST_IDLE) {
+		shell->writeString("BUSY");
+		shell->newline();
+		return;
+	}
+
 	Frame* frame = _camera->readFrame();
 	if (!frame) {
 		shell->error("Frame buffer is empty!");

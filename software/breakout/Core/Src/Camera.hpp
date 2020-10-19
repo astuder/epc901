@@ -30,6 +30,15 @@ public:
 	Camera();
 
 	void init(EPC901 *sensor, Shell *shell, Frame* frame_buffer, uint16_t frame_buf_size);
+	void loop(void);
+
+	enum state {
+		ST_IDLE = 0,
+		ST_CAPTURE = 1,
+		ST_CAPTURE_FAST = 2
+	};
+
+	state getState(void);
 
 	void setExposureTime(uint32_t time_us);
 	uint32_t getExposureTime(void);
@@ -44,22 +53,31 @@ public:
 	uint16_t getBurstInterval(void);
 
 	uint8_t capture(void);
-	void burst(uint16_t frame_count);
+	void abort(void);
 
 	Frame* readFrame(void);			// read next available frame, returns 0 if no frame available
 	uint16_t getRemainingFrames();
 
 private:
+	void _captureLoop(void);
+	void _captureLoopFast(void);
 	void _commitFrame(uint32_t timestamp);
 
 	EPC901* _sensor;
+
+	state _state;
+
 	uint32_t _exposure_time;
-	uint32_t _start_time;
 
 	uint8_t _burst_enable;
 	uint8_t _burst_fast;
 	uint16_t _burst_frames;
 	uint16_t _burst_interval;		// time per frame in ms, 0=best effort
+
+	uint32_t _capture_start_time;
+	uint32_t _capture_frame_time;
+	uint16_t _capture_frame;
+	uint8_t _capture_pending;
 
 	Frame* _frame_buffer;
 	uint16_t _frame_buf_size;

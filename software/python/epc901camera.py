@@ -54,6 +54,9 @@ class Camera:
             # get pixels of last frame, discard the others
             transfer_cmd = "transfer last"
         frame_meta = self.sendCommand(transfer_cmd) # frame number, timestamp, exposure
+        while frame_meta.startswith("BUSY"):
+            frame_meta = self.sendCommand(transfer_cmd) # retry if camera is busy
+
         if frame_meta is None or frame_meta.startswith("ERROR"):
             # no pixels available
             return

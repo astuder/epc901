@@ -45,6 +45,13 @@ void App_Setup(I2C_HandleTypeDef* hi2c, UART_HandleTypeDef* huart, SPI_HandleTyp
 
 void App_Loop() {
 	shell.loop();
+	camera.loop();
+	if (camera.getState() == Camera::ST_IDLE) {
+		Leds::clear(Leds::RED);
+	} else {
+		Leds::set(Leds::RED);
+	}
+
 /*
 	leds.set(leds.BLUE);
 	char rev_str[10];

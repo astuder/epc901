@@ -12,17 +12,25 @@
 #include "main.h"
 #include <cstring>
 
+// UART RX ring buffer, filled by DMA. Will lose data on overflow, but that's ok.
+#define RX_BUF_SIZE 64
+static uint8_t rx_buffer[RX_BUF_SIZE];
+static uint32_t rx_pos;
+#define DMA_WRITE_POS ( (RX_BUF_SIZE - ((UART_HandleTypeDef*) _pfdata)->hdmarx->Instance->CNDTR) & (RX_BUF_SIZE - 1) )
+
 void Shell::_pfInit() {
+	HAL_UART_Receive_DMA((UART_HandleTypeDef*) _pfdata, rx_buffer, RX_BUF_SIZE);
+	rx_pos = 0;
 }
 
 unsigned char Shell::_pfReadChar() {
-	// TODO: BUG: Breaks when keys are pressed while busy.
-	char ch[1];
-	if (HAL_OK == HAL_UART_Receive((UART_HandleTypeDef*) _pfdata, (uint8_t *)ch, 1, 0)) {
-		return ch[0];
-	} else {
-		return 0;
+	unsigned char ch = 0;
+	if (rx_pos != DMA_WRITE_POS) {
+		ch = rx_buffer[rx_pos];
+		rx_pos++;
+		rx_pos &= (RX_BUF_SIZE - 1);
 	}
+	return ch;
 }
 
 void Shell::_pfWriteChar(unsigned char ch) {

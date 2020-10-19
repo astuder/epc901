@@ -13,7 +13,8 @@
 
 CmdCapture::CmdCapture(Camera* camera) {
 	init("capture",
-		 "\tcapture: Capture an image.\r\n");
+		 "\tcapture: Capture an image.\r\n"
+		 "\tcapture abort: Abort current capture.\r\n");
 	_camera = camera;
 }
 
@@ -27,9 +28,24 @@ void CmdCapture::handler(Shell* shell) {
 		return;
 	}
 
-	Leds::set(Leds::RED);
+	const char* param = shell->readParam();
+
+	if (param) {
+		if (0 == stricmp(param, "ABORT")) {
+			_camera->abort();
+		}
+		shell->ok();
+		return;
+	}
+
+	if (_camera->getState() != Camera::ST_IDLE) {
+		shell->writeString("BUSY");
+		shell->newline();
+		return;
+	}
+
 	uint8_t err = _camera->capture();
-	Leds::clear(Leds::RED);
+
 	switch (err) {
 		case 0:
 			shell->ok();
