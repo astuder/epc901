@@ -29,20 +29,39 @@ class Camera {
 public:
 	Camera();
 
+	void reset(void);
 	void init(EPC901 *sensor, Shell *shell, Frame* frame_buffer, uint16_t frame_buf_size);
 	void loop(void);
 
-	enum state {
+	enum state_t {
 		ST_IDLE = 0,
 		ST_CAPTURE = 1,
-		ST_CAPTURE_FAST = 2
+		ST_CAPTURE_FAST = 2,
+		ST_TRIGGER = 3,
+		ST_TRIGGER_DELAY = 4
 	};
 
-	state getState(void);
+	enum trig_src_t {
+		TRIG_EXTERNAL = 0,
+		TRIG_LEVEL = 1,
+		TRIG_REGION = 2
+	};
+
+	enum trig_dir_t {
+		TRIG_RISING = 0,
+		TRIG_FALLING = 1
+	};
+
+	struct trig_region_t {
+		uint16_t x1, y1, x2, y2;
+	};
+
+	state_t getState(void);
 
 	void setExposureTime(uint32_t time_us);
 	uint32_t getExposureTime(void);
 	uint32_t getMaxExposureTime(void);
+
 	void setBurstEnable(uint8_t enable);
 	uint8_t getBurstEnable(void);
 	void setBurstFast(uint8_t enable);
@@ -51,6 +70,20 @@ public:
 	uint16_t getBurstFrames(void);
 	void setBurstInterval(uint16_t);
 	uint16_t getBurstInterval(void);
+
+	void setTriggerEnable(uint8_t enable);
+	uint8_t getTriggerEnable(void);
+	void setTriggerSource(trig_src_t source);
+	trig_src_t getTriggerSource(void);
+	void setTriggerDelay(uint16_t delay);
+	uint16_t getTriggerDelay(void);
+	void setTriggerDirection(trig_dir_t direction);
+	trig_dir_t getTriggerDirection(void);
+	void setTriggerLevel(uint16_t level);
+	uint16_t getTriggerLevel(void);
+	void setTriggerRegion(trig_region_t region);
+	trig_region_t getTriggerRegion(void);
+	void externalTrigger(void);
 
 	uint8_t capture(void);
 	void abort(void);
@@ -61,11 +94,16 @@ public:
 private:
 	void _captureLoop(void);
 	void _captureLoopFast(void);
+	void _triggerLoop(void);
+	void _triggerDelayLoop(void);
+	void _startCapture(uint8_t pre_trigger);
+	void _stopCapture(void);
 	void _commitFrame(uint32_t timestamp);
+	void _setupExternalTrigger(void);
 
 	EPC901* _sensor;
 
-	state _state;
+	state_t _state;
 
 	uint32_t _exposure_time;
 
@@ -73,6 +111,15 @@ private:
 	uint8_t _burst_fast;
 	uint16_t _burst_frames;
 	uint16_t _burst_interval;		// time per frame in ms, 0=best effort
+
+	uint8_t _trigger_enable;
+	uint32_t _trigger_time;
+	trig_dir_t _trigger_direction;
+	trig_src_t _trigger_source;
+	uint16_t _trigger_delay;
+	uint16_t _trigger_level;
+	trig_region_t _trigger_region;
+	uint8_t _external_trigger;
 
 	uint32_t _capture_start_time;
 	uint32_t _capture_frame_time;

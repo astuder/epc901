@@ -61,6 +61,7 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define B1_Pin GPIO_PIN_13
 #define B1_GPIO_Port GPIOC
+#define B1_EXTI_IRQn EXTI15_10_IRQn
 #define ADC_CLK_Pin GPIO_PIN_5
 #define ADC_CLK_GPIO_Port GPIOA
 #define ADC_DATA_Pin GPIO_PIN_6
@@ -73,6 +74,9 @@ void Error_Handler(void);
 #define CLR_DATA_GPIO_Port GPIOE
 #define PWR_DOWN_Pin GPIO_PIN_13
 #define PWR_DOWN_GPIO_Port GPIOE
+#define TRIGGER_Pin GPIO_PIN_11
+#define TRIGGER_GPIO_Port GPIOB
+#define TRIGGER_EXTI_IRQn EXTI15_10_IRQn
 #define LD3_Pin GPIO_PIN_14
 #define LD3_GPIO_Port GPIOB
 #define ADC_CS_Pin GPIO_PIN_14

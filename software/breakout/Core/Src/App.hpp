@@ -14,6 +14,7 @@
 
 void App_Setup(I2C_HandleTypeDef* hi2c, UART_HandleTypeDef* huart, SPI_HandleTypeDef* hspi, TIM_HandleTypeDef* htim);
 void App_Loop();
+void App_Interrupt();
 
 #ifdef __cplusplus
 	}

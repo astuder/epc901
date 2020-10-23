@@ -17,6 +17,7 @@ EPC901::EPC901() {
 	_chip_rev = 0;
 	_i2c_addr = 0;
 	_i2c_handle = 0;
+	_power_state = 0;
 }
 
 EPC901::~EPC901() {
@@ -116,11 +117,13 @@ void EPC901::_powerUp() {
 	// power up sensor
 	HAL_GPIO_WritePin(PWR_DOWN_GPIO_Port, PWR_DOWN_Pin, GPIO_PIN_RESET);
 	DWT_Delay_us(12);
+	_power_state = 1;
 }
 
 void EPC901::_powerDown() {
 	// power down sensor
 	HAL_GPIO_WritePin(PWR_DOWN_GPIO_Port, PWR_DOWN_Pin, GPIO_PIN_SET);
+	_power_state = 0;
 }
 
 void EPC901::_clear() {
@@ -142,6 +145,11 @@ void EPC901::_clear() {
 }
 
 void EPC901::_exposeImage(uint32_t exposure_us) {
+	if (_power_state == 0) {
+		_powerUp();
+		_clear();
+	}
+
 	// calculate exposure in clk ticks
 	uint32_t exposure_clk = exposure_us * 80;
 	// set prescaler

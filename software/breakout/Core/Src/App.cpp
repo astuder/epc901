@@ -30,7 +30,7 @@ Camera camera = Camera();
 Shell shell = Shell();
 CmdRegRead cmd_regread = CmdRegRead(&sensor);
 CmdRegWrite cmd_regwrite = CmdRegWrite(&sensor);
-CmdReset cmd_reset = CmdReset(&sensor);
+CmdReset cmd_reset = CmdReset(&sensor, &camera);
 
 void App_Setup(I2C_HandleTypeDef* hi2c, UART_HandleTypeDef* huart, SPI_HandleTypeDef* hspi, TIM_HandleTypeDef* htim) {
 	Leds::clearAll();
@@ -51,34 +51,9 @@ void App_Loop() {
 	} else {
 		Leds::set(Leds::RED);
 	}
-
-/*
-	leds.set(leds.BLUE);
-	char rev_str[10];
-	HAL_UART_Transmit(h_app_uart, (uint8_t*) chiprev_str, strlen(chiprev_str), -1);
-	itoa(sensor.getRevision(), rev_str, 10);
-	HAL_UART_Transmit(h_app_uart, (uint8_t*) rev_str, strlen(rev_str), -1);
-	HAL_UART_Transmit(h_app_uart, (uint8_t*) new_line, strlen(new_line), -1);
-
-	uint16_t *image = 0;
-	image = sensor.captureImage(25);
-	if (image) {
-		char pixel_str[10];
-		for (int i=0; i<1024; i++) {
-			itoa(image[i], pixel_str, 10);
-			HAL_UART_Transmit(h_app_uart, (uint8_t*) pixel_str, strlen(pixel_str), -1);
-			if (i != 1023) {
-				HAL_UART_Transmit(h_app_uart, (uint8_t*) comma, strlen(comma), -1);
-			}
-			if ((i & 0x07) == 0x07) {
-				HAL_UART_Transmit(h_app_uart, (uint8_t*) new_line, strlen(new_line), -1);
-			}
-		}
-		HAL_UART_Transmit(h_app_uart, (uint8_t*) new_line, strlen(new_line), -1);
-	}
-	HAL_Delay(1000);
-	leds.clear(leds.BLUE);
-	HAL_Delay(1000);
-*/
 	return;
+}
+
+void App_Interrupt() {
+	camera.externalTrigger();
 }

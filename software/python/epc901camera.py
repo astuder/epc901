@@ -12,6 +12,7 @@ class Camera:
             self.sendCommand("echo off")
             while self.ser.in_waiting:
                 self.ser.readline()     # flush any extra lines
+            self.sendCommand("reset camera")
             self.sendCommand("reset sensor")
         except Exception as e:
             print("Failed to connect to sensor on port ", port)
@@ -36,6 +37,27 @@ class Camera:
         self.sendCommand(burst_str)
         burst_str = "burst interval {}".format(interval)
         self.sendCommand(burst_str)
+
+    def setTriggerSource(self, source):
+        self.sendCommand("trigger on")
+        trig_str = "trigger source {}".format(source)
+        self.sendCommand(trig_str)
+
+    def setTriggerDelay(self, delay):
+        trig_str = "trigger delay {}".format(delay)
+        self.sendCommand(trig_str)
+
+    def setTriggerDirection(self, direction):
+        trig_str = "trigger direction {}".format(direction)
+        self.sendCommand(trig_str)
+
+    def setTriggerLevel(self, level):
+        trig_str = "trigger level {}".format(level)
+        self.sendCommand(trig_str)
+
+    def setTriggerRegion(self, x1, y1, x2, y2):
+        trig_str = "trigger region {} {} {} {}".format(x1, y1, x2, y2)
+        self.sendCommad(trig_str)
 
     def capture(self):
         self.sendCommand("capture")

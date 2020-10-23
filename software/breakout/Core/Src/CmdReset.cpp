@@ -7,14 +7,17 @@
 
 #include "CmdReset.hpp"
 #include "EPC901.hpp"
+#include "Camera.hpp"
 #include "Shell.hpp"
 #include <cstring>
 
-CmdReset::CmdReset(EPC901* sensor) {
+CmdReset::CmdReset(EPC901* sensor, Camera* camera) {
 	init("reset",
 		 "\treset mcu: Reset MCU.\r\n"
+		 "\treset camera: Reset camera settings.\r\n"
 		 "\treset sensor: Reset image sensor.\r\n");
 	_sensor = sensor;
+	_camera = camera;
 }
 
 void CmdReset::handler(Shell *shell) {
@@ -27,6 +30,10 @@ void CmdReset::handler(Shell *shell) {
 		return;
 	}
 
+	if (!_camera) {
+		shell->error("No camera!");
+	}
+
 	const char* param = shell->readParam();
 	if (!param) {
 		shell->error("Missing device to reset.");
@@ -35,6 +42,12 @@ void CmdReset::handler(Shell *shell) {
 
 	if (0 == stricmp(param, "sensor")) {
 		_sensor->reset();
+		shell->ok();
+		return;
+	}
+
+	if (0 == stricmp(param, "camera")) {
+		_camera->reset();
 		shell->ok();
 		return;
 	}
