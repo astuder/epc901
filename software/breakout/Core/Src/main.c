@@ -356,7 +356,7 @@ static void MX_TIM1_Init(void)
   sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
   sConfigOC.OCIdleState = TIM_OCIDLESTATE_RESET;
   sConfigOC.OCNIdleState = TIM_OCNIDLESTATE_RESET;
-  if (HAL_TIM_PWM_ConfigChannel(&htim1, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
+  if (HAL_TIM_PWM_ConfigChannel(&htim1, &sConfigOC, TIM_CHANNEL_3) != HAL_OK)
   {
     Error_Handler();
   }
@@ -419,16 +419,13 @@ static void MX_GPIO_Init(void)
   HAL_PWREx_EnableVddIO2();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(CLR_PIX_GPIO_Port, CLR_PIX_Pin, GPIO_PIN_RESET);
-
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOE, CLR_DATA_Pin|PWR_DOWN_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOF, CLR_PIX_Pin|CLR_DATA_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, LD3_Pin|LD2_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOD, ADC_CS_Pin|READ_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOD, PWR_DOWN_Pin|ADC_CS_Pin|READ_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(USB_PowerSwitchOn_GPIO_Port, USB_PowerSwitchOn_Pin, GPIO_PIN_RESET);
@@ -442,32 +439,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : CLR_PIX_Pin */
-  GPIO_InitStruct.Pin = CLR_PIX_Pin;
+  /*Configure GPIO pins : CLR_PIX_Pin CLR_DATA_Pin */
+  GPIO_InitStruct.Pin = CLR_PIX_Pin|CLR_DATA_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(CLR_PIX_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : DATA_RDY_Pin */
-  GPIO_InitStruct.Pin = DATA_RDY_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(DATA_RDY_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : CLR_DATA_Pin */
-  GPIO_InitStruct.Pin = CLR_DATA_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(CLR_DATA_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : PWR_DOWN_Pin */
-  GPIO_InitStruct.Pin = PWR_DOWN_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_PULLUP;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(PWR_DOWN_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOF, &GPIO_InitStruct);
 
   /*Configure GPIO pin : TRIGGER_Pin */
   GPIO_InitStruct.Pin = TRIGGER_Pin;
@@ -481,6 +458,19 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : DATA_RDY_Pin */
+  GPIO_InitStruct.Pin = DATA_RDY_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(DATA_RDY_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PWR_DOWN_Pin */
+  GPIO_InitStruct.Pin = PWR_DOWN_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(PWR_DOWN_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : ADC_CS_Pin READ_Pin */
   GPIO_InitStruct.Pin = ADC_CS_Pin|READ_Pin;

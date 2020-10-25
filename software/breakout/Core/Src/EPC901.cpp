@@ -44,9 +44,16 @@ uint8_t EPC901::init(I2C_HandleTypeDef* i2c_handle, uint8_t i2c_addr, SPI_Handle
 
 	// enable one pulse timer
 	HAL_TIM_OnePulse_Start(_tim_handle, TIM_CHANNEL_1);
+	// enable CH3 which is not full supported in HAL
+	TIM_CCxChannelCmd(_tim_handle->Instance, TIM_CHANNEL_3, TIM_CCx_ENABLE);
+	// dummy pulse to get timer into known state
+	__HAL_TIM_SET_PRESCALER(_tim_handle, 0);
+	_tim_handle->Instance->CCR3 = 1;
+	_tim_handle->Instance->ARR = 10;
+	__HAL_TIM_ENABLE(_tim_handle);
+	HAL_Delay(1);
 
 	// init sensor
-
 	_powerUp();
 
 	// read chip revision
@@ -163,7 +170,7 @@ void EPC901::_exposeImage(uint32_t exposure_us) {
 		__HAL_TIM_SET_PRESCALER(_tim_handle, 0);
 	}
 	// set pulse_start
-	_tim_handle->Instance->CCR1 = 1;
+	_tim_handle->Instance->CCR3 = 1;
 	// set pulse end
 	_tim_handle->Instance->ARR = 1 + exposure_clk;
 	// start pulse
