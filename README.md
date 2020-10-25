@@ -27,8 +27,7 @@ The folder [```./hardware/breakout```](https://github.com/astuder/epc901/tree/ma
 The images sensor comes in a 2x16, 0.5 mm pitch BGA package and looks very fragile. With careful handling and placement, we successfully assembled a few boards
 using a stainless steel solder stencil and an unmodified toaster oven for reflow. Reflow on a hotplate probably works as well.
 
-In addition to the image sensor and related passives, the breakout board also integrates an ADC. Footprint and firmware are compatible with [Texas Instruments ADCS7476]
-(https://www.ti.com/product/ADCS7476) and [Analog Devices AD7476](https://www.analog.com/en/products/ad7476.html) which are 1 MSPS 12-bit ADCs with SPI-like interface.
+In addition to the image sensor and related passives, the breakout board also integrates an ADC. Footprint and firmware are compatible with [Texas Instruments ADCS7476](https://www.ti.com/product/ADCS7476) and [Analog Devices AD7476](https://www.analog.com/en/products/ad7476.html) which are 1 MSPS 12-bit ADCs with SPI-like interface.
 
 ## Adapter board
 
@@ -47,7 +46,7 @@ STM32L4 using the [NUCLEO-L496ZG evaluation board](https://www.digikey.com/en/pr
 evaluation board were chosen because we had one laying around.
 
 The firmware is developed and built with the latest version of STM32CubeIDE (version 1.4.2 as of October 2020). To import the project into STM32CubeIDE, clone this
-repository, open STM32CubeIDE and import the project with ```File > Open Project From File System..```, select the folder ```./software/breakout```. Follow the standard
+repository, open STM32CubeIDE and import the project with ```File > Open Project From File System..```, and select the folder ```./software/breakout```. Follow the standard
 procedure for building the firmware and programming the NUCLEO evaluation board.
 
 ## Python
