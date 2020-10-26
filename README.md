@@ -71,7 +71,7 @@ The size of the board is 61 x 36 mm. The mounting holes in the corners are space
 
 The mounting holes for the lens holder are located 29 mm from the left board edge and 8 mm from top and bottom board edge. They have a diameter of 2.2 mm, designed for M2 screws.
 
-![epc901-breakout dimensions](https://github.com/astuder/epc901/tree/main/hardware/breakout/epc901-breakout-dims.png)
+![epc901-breakout dimensions](https://github.com/astuder/epc901/blob/main/hardware/breakout/epc901-breakout-dims.png)
 
 ### Lens holder & lens
 
