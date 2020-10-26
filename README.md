@@ -29,6 +29,56 @@ using a stainless steel solder stencil and an unmodified toaster oven for reflow
 
 In addition to the image sensor and related passives, the breakout board also integrates an ADC. Footprint and firmware are compatible with [Texas Instruments ADCS7476](https://www.ti.com/product/ADCS7476) and [Analog Devices AD7476](https://www.analog.com/en/products/ad7476.html) which are 1 MSPS 12-bit ADCs with SPI-like interface.
 
+### Lens holder & lens
+
+The breakout board has space and mounting holes for a lens holder. The spacing between the mounting holes is 20mm. For full coverage, the lens should support 1/2.3" or larger sensors.
+
+For our prototypes, we chose a [M12 metal lens holder w/ 20mm hole spacing](https://www.m12lenses.com/CNC-Machined-M12-Lens-Holder-Metal-p/pt-lh031m.htm) and a [25mm M12 lens for 1/2" sensors](https://www.m12lenses.com/25mm-F2-4-5MP-CCTV-Lens-p/pt-2524mp5y.htm). In the US, a wide selection of lens holders and lenses can be found at [M12 Lenses Inc](https://www.m12lenses.com).
+
+For use in a spectrograph, a lens may not be required. However we recommend protecting the sensor against accidental physical damage with some sort of bracket or baffel.
+
+### Connector pinout
+
+Pin|Function|Comment
+-|-|-
+1|GND|digital ground
+2|PWR_DOWN|see epc901 datasheet
+3|DATA_RDY|see epc901 datasheet
+4|CLR_DATA|see epc901 datasheet
+5|SHUTTER|see epc901 datasheet
+6|CLR_PIX|see epc901 datasheet
+7|GNDA|analog ground
+8|VIDEO_P|positive video signal for use w/ external ADC, see epc901 datasheet
+9|VIDEO_N|negative video signal for use w/ external ADC, see epc901 datasheet
+10|GNDA|analog ground
+11|GND|digital ground
+12|ADC_CLK|SPI clk to on-board ADC
+13|ADC_DATA|SPI data from on-board ADC
+14|ADC_CS|SPI chip select of on-board ADC
+15|GND|digital ground
+16|3V3|3.3V power supply
+17|GND|digital ground
+18|READ|see epc901 datasheet
+19|SDA|I2C data
+20|SCL|I2C clock
+
+### Jumpers
+
+ID|Function|Comment
+-|-|-
+JP1|STAR GND|star ground point between GND and GNDA. Close to connect, leave open if GNDA and GND are connected off-board.
+JP2|ADC SELECTION|selects whether to use the on-board ADC or an external ADC. External ADC will route VIDEO_P to pin 8 in the connector.
+
+### Config resistor array
+
+These resistors control the configuration of the image sensor on power-up. For details, see sections 4, 7.1 and 12 in the epc901 datasheet.
+
+### Physical dimensions
+
+The size of the board is 61 x 36 mm. The mounting holes in the corners are spaced 55 x 30 mm and have a diameter of 2.2 mm, designed for M2 screws.
+
+The mounting holes for the lens holder are located 29 mm from the left board edge and 8 mm from top and bottom board edge. They have a diameter of 2.2 mm, designed for M2 screws.
+
 ## Adapter board
 
 The folder [```./hardware/adapter-shield```](https://github.com/astuder/epc901/tree/main/hardware/adapter-shield) contains the KiCad project for an adapter to mount the 
