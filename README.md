@@ -29,14 +29,6 @@ using a stainless steel solder stencil and an unmodified toaster oven for reflow
 
 In addition to the image sensor and related passives, the breakout board also integrates an ADC. Footprint and firmware are compatible with [Texas Instruments ADCS7476](https://www.ti.com/product/ADCS7476) and [Analog Devices AD7476](https://www.analog.com/en/products/ad7476.html) which are 1 MSPS 12-bit ADCs with SPI-like interface.
 
-### Lens holder & lens
-
-The breakout board has space and mounting holes for a lens holder. The spacing between the mounting holes is 20mm. For full coverage, the lens should support 1/2.3" or larger sensors.
-
-For our prototypes, we chose a [M12 metal lens holder w/ 20mm hole spacing](https://www.m12lenses.com/CNC-Machined-M12-Lens-Holder-Metal-p/pt-lh031m.htm) and a [25mm M12 lens for 1/2" sensors](https://www.m12lenses.com/25mm-F2-4-5MP-CCTV-Lens-p/pt-2524mp5y.htm). In the US, a wide selection of lens holders and lenses can be found at [M12 Lenses Inc](https://www.m12lenses.com).
-
-For use in a spectrograph, a lens may not be required. However we recommend protecting the sensor against accidental physical damage with some sort of bracket or baffel.
-
 ### Connector pinout
 
 Pin|Function|Comment
@@ -78,6 +70,16 @@ These resistors control the configuration of the image sensor on power-up. For d
 The size of the board is 61 x 36 mm. The mounting holes in the corners are spaced 55 x 30 mm and have a diameter of 2.2 mm, designed for M2 screws.
 
 The mounting holes for the lens holder are located 29 mm from the left board edge and 8 mm from top and bottom board edge. They have a diameter of 2.2 mm, designed for M2 screws.
+
+![epc901-breakout dimensions](https://github.com/astuder/epc901/tree/main/hardware/breakout/epc901-breakout-dims.png)
+
+### Lens holder & lens
+
+The breakout board has space and mounting holes for a lens holder. The spacing between the mounting holes is 20mm. For full coverage, the lens should support 1/2.3" or larger sensors.
+
+For our prototypes, we chose a [M12 metal lens holder w/ 20mm hole spacing](https://www.m12lenses.com/CNC-Machined-M12-Lens-Holder-Metal-p/pt-lh031m.htm) and a [25mm M12 lens for 1/2" sensors](https://www.m12lenses.com/25mm-F2-4-5MP-CCTV-Lens-p/pt-2524mp5y.htm). In the US, a wide selection of lens holders and lenses can be found at [M12 Lenses Inc](https://www.m12lenses.com).
+
+For use in a spectrograph, a lens may not be required. However we recommend protecting the sensor against accidental physical damage with some sort of bracket or baffel.
 
 ## Adapter board
 
