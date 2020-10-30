@@ -134,21 +134,17 @@ void EPC901::_powerDown() {
 }
 
 void EPC901::_clear() {
-/* clear data causes issues, it looks like READ is never asserted on next exposure
 	// clear data (necessary when using power-down?)
 	HAL_GPIO_WritePin(CLR_DATA_GPIO_Port, CLR_DATA_Pin, GPIO_PIN_SET);
-	DWT_Delay_us(1);
+	DWT_Delay_us(2);
 	HAL_GPIO_WritePin(CLR_DATA_GPIO_Port, CLR_DATA_Pin, GPIO_PIN_RESET);
-	DWT_Delay_us(10);
+	DWT_Delay_us(20);
+
 	// clear pixels (necessary when using power-down?)
 	HAL_GPIO_WritePin(CLR_PIX_GPIO_Port, CLR_PIX_Pin, GPIO_PIN_SET);
-	DWT_Delay_us(1);
+	DWT_Delay_us(2);
 	HAL_GPIO_WritePin(CLR_PIX_GPIO_Port, CLR_PIX_Pin, GPIO_PIN_RESET);
-	DWT_Delay_us(10);
-*/
-	// reset as workaround to flush accumulated charge
-	uint8_t val = 6;
-	HAL_I2C_Master_Transmit(_i2c_handle, 0, &val, 1, 100);
+	DWT_Delay_us(20);
 }
 
 void EPC901::_exposeImage(uint32_t exposure_us) {
