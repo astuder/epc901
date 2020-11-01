@@ -19,6 +19,7 @@ parser.add_argument("-gq", help="quiet mode, don't show window with graph", dest
 parser.add_argument("-gpng", help="file to save graph of data (PNG)", dest="graph_file")
 parser.add_argument("-png", help="file to save image (PNG)", dest="png_file")
 parser.add_argument("-csv", help="file to save data (CSV)", dest="csv_file")
+parser.add_argument("-sx", help="scale x axis given wavelengths w1, w2 at pixels px1 and px2", dest="scale_x", metavar="px1,w1,px2,w2")
 args = parser.parse_args()
 
 camera = Camera()
@@ -36,6 +37,17 @@ if args.trig_direction is not None:
     camera.setTriggerDirection(args.trig_direction)
 if args.trig_delay is not None:
     camera.setTriggerDelay(args.trig_delay)
+if args.scale_x is not None:
+    px1, w1, px2, w2 = (args.scale_x.split(","))
+    px1 = float(px1)
+    px2 = float(px2)
+    w1 = float(w1)
+    w2 = float(w2)
+    slope = (w2 - w1)/(px2 - px1)
+    intercept = w1 - px1 * slope
+    xscale = []
+    for i in range(1024):
+        xscale = xscale + [slope * float(i) + intercept]
 
 camera.capture()
 pixels = camera.getPixels(True)
@@ -78,7 +90,10 @@ if args.graph_quiet == False or args.graph_file:
     ax1 = fig.add_subplot(1,1,1)
     if args.auto_scale == False:
         ax1.set_ylim((0, 3000), auto=False)
-    ax1.plot(pixels)
+    if args.scale_x is not None:
+        ax1.plot(xscale, pixels)
+    else:
+        ax1.plot(pixels)
 
     if args.graph_file:
         plt.savefig(args.graph_file, format="png")
