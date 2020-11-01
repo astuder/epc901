@@ -104,7 +104,10 @@ def graph_loop(frame):
     ax1.clear()
     if args.auto_scale == False:
         ax1.set_ylim((0, 3000), auto=False)
-    ax1.plot(yar)
+    if args.scale_x is not None:
+        ax1.plot(yar, pixels)
+    else:
+        ax1.plot(pixels)
 
 if args.graph_type == 2:
     # animated 2D graph
