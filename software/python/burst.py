@@ -24,6 +24,7 @@ parser.add_argument("-gq", help="quiet mode, don't show window with graph", dest
 parser.add_argument("-gf", help="file to save graph of data (2d:GIF, 3d:PNG)", dest="graph_file")
 parser.add_argument("-png", help="file to save image (PNG)", dest="png_file")
 parser.add_argument("-csv", help="file to save data (CSV)", dest="csv_file")
+parser.add_argument("-sx", help="scale x axis given wavelengths w1, w2 at pixels px1 and px2", dest="scale_x", metavar="px1,w1,px2,w2")
 args = parser.parse_args()
 
 pixels = []
@@ -43,6 +44,17 @@ if args.trig_direction is not None:
     camera.setTriggerDirection(args.trig_direction)
 if args.trig_delay is not None:
     camera.setTriggerDelay(args.trig_delay)
+if args.scale_x is not None:
+    px1, w1, px2, w2 = (args.scale_x.split(","))
+    px1 = float(px1)
+    px2 = float(px2)
+    w1 = float(w1)
+    w2 = float(w2)
+    slope = (w2 - w1)/(px2 - px1)
+    intercept = w1 - px1 * slope
+    xscale = []
+    for i in range(1024):
+        xscale = xscale + [slope * float(i) + intercept]
 
 camera.setBurst(args.frames, args.interval)
 print("Recording images..")
