@@ -1,4 +1,9 @@
-# Live view for EPC901 breakout board
+# Live view for epc901 breakout board
+#
+# Copyright 2020 by Adrian Studer, Frank Milburn
+#
+# Licensed under the terms of MIT License, all text here must be included in any redistribution.
+# See the LICENSE-SW file for details.
 
 from epc901camera import Camera
 import sys

@@ -1,4 +1,9 @@
-# Wrapper library for EPC901 breakout board
+# Wrapper library for epc901 breakout board
+#
+# Copyright 2020 by Adrian Studer
+#
+# Licensed under the terms of MIT License, all text here must be included in any redistribution.
+# See the LICENSE-SW file for details.
 
 import serial
 import sys

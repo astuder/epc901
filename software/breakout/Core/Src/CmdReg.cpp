@@ -1,8 +1,10 @@
 /*
- * CmdReg.cpp
+ * Shell commands to access sensor registers.
  *
- *  Created on: Oct 4, 2020
- *      Author: adrian
+ * Copyright 2020 by Adrian Studer
+ *
+ * Licensed under the terms of MIT License, all text here must be included in any redistribution.
+ * See the LICENSE-SW file for details.
  */
 
 #include "CmdReg.hpp"

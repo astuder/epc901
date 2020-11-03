@@ -1,8 +1,10 @@
 /*
- * CmdTrigger.cpp
+ * Shell commands to configure trigger.
  *
- *  Created on: Oct 20, 2020
- *      Author: adrian
+ * Copyright 2020 by Adrian Studer
+ *
+ * Licensed under the terms of MIT License, all text here must be included in any redistribution.
+ * See the LICENSE-SW file for details.
  */
 
 #include "CmdTrigger.hpp"
