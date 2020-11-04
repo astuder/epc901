@@ -192,10 +192,10 @@ Most commands that configure an aspect of the firmware return the current settin
 |burst frames <count>|set number of frames to capture in a burst|
 |burst interval <time_ms>|set interval in milliseconds at which frames are captured. 0 will capture frames at the maximum speed possible.|
 |trigger <on/off>|enable or disable trigger|
-|trigger source <external/level/region>|select source of trigger signal|
-|trigger direction <rising/falling>|set which direction of a signal will trigger. for ```level``` and ```region``` rising means above/inside level/region, falling means NOT above/inside|
+|trigger source <external/level/zone>|select source of trigger signal|
+|trigger direction <rising/falling>|set which direction of a signal will trigger. for ```level``` and ```zone``` rising means above/inside level/zone, falling means NOT above/inside|
 |trigger level <level>|set trigger level for ```level``` trigger source|
-|trigger region <x1 y1 x2 y2>|set trigger region for ```region``` trigger source|
+|trigger zone <x1 y1 x2 y2>|set trigger zone for ```zone``` trigger source|
 
 ### Capture logic
 
@@ -227,12 +227,12 @@ The level trigger source uses live sensor data to trigger. When starting capture
 Trigger direction ```rising``` triggers when any pixel is above the configured trigger level.
 Trigger direction ```falling``` triggers when no pixel is above the configured trigger level.
 
-**Region**
+**Zone**
 
-The region trigger source uses live sensor data to trigger. When starting capture, the firmware will continously capture images until a trigger occurs or capture is aborted.
+The zone trigger source uses live sensor data to trigger. When starting capture, the firmware will continously capture images until a trigger occurs or capture is aborted.
 
-Trigger direction ```rising``` triggers when any pixel is inside the configured trigger region.
-Trigger direction ```falling``` triggers when no pixel is inside the configured trigger region.
+Trigger direction ```rising``` triggers when any pixel is inside the configured trigger zone.
+Trigger direction ```falling``` triggers when no pixel is inside the configured trigger zone.
 
 ### Transfer format
 
@@ -263,10 +263,10 @@ The scripts are controlled with shared and a few unique command line arguments.
 |-h, --help|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|Display help text.|
 |-p PORT|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|Serial port which connects to the camera board, this is the only required argument.|
 |-e EXPOSURE|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|Set exposure time in microseconds. If not specified, the default exposure time is 1ms (1000us).|
-|-t {external,level,region}||:heavy_check_mark:|:heavy_check_mark:|Enable trigger and select trigger source. See [Trigger logic](#trigger-logic).|
+|-t {external,level,zone}||:heavy_check_mark:|:heavy_check_mark:|Enable trigger and select trigger source. See [Trigger logic](#trigger-logic).|
 |-tdir {falling,rising}||:heavy_check_mark:|:heavy_check_mark:|Set direction of trigger logic.|
 |-tl TRIG_LEVEL||:heavy_check_mark:|:heavy_check_mark:|Set brightness for level trigger. Valid values are 0-4095.|
-|-tr x1,y1,x2,y2||:heavy_check_mark:|:heavy_check_mark:|Define rectangle for region trigger. Valid x values are 0-1023, valid y values are 0-4095.|
+|-tz x1,y1,x2,y2||:heavy_check_mark:|:heavy_check_mark:|Define rectangle for zone trigger. Valid x values are 0-1023, valid y values are 0-4095.|
 |-td TRIG_DELAY||:heavy_check_mark:|:heavy_check_mark:|Set delay in milliseconds after trigger event before image capture starts.|
 |-f FRAMES|||:heavy_check_mark:|Number of frames to capture in a burst.|
 |-i INTERVAL|||:heavy_check_mark:|Set time interval in milliseconds between frames. 0 means best effort, i.e. at maximum speed possible. As it takes 1.3ms to read out a frame, effective capture rates may be lower than the configured interval. |

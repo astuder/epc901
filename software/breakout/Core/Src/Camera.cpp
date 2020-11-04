@@ -46,7 +46,7 @@ void Camera::reset(void) {
 	_trigger_direction = TRIG_RISING;
 	_trigger_level = 1500;
 	_external_trigger = 0;
-	memset(&_trigger_region, 0, sizeof(trig_region_t));
+	memset(&_trigger_zone, 0, sizeof(trig_zone_t));
 }
 
 void Camera::init(EPC901 *sensor, Shell *shell, Frame* frame_buffer, uint16_t frame_buf_size) {
@@ -216,32 +216,32 @@ uint16_t Camera::getTriggerLevel(void) {
 	return _trigger_level;
 }
 
-void Camera::setTriggerRegion(trig_region_t region) {
-	if (region.x1 >= 1024 || region.x2 >= 1024 ||
-		region.y1 >= 4096 || region.y2 >= 4096) {
-		// region values out of bound
+void Camera::setTriggerZone(trig_zone_t zone) {
+	if (zone.x1 >= 1024 || zone.x2 >= 1024 ||
+		zone.y1 >= 4096 || zone.y2 >= 4096) {
+		// zone values out of bound
 		return;
 	}
 
-	if (region.x1 <= region.x2) {
-		_trigger_region.x1 = region.x1;
-		_trigger_region.x2 = region.x2;
+	if (zone.x1 <= zone.x2) {
+		_trigger_zone.x1 = zone.x1;
+		_trigger_zone.x2 = zone.x2;
 	} else {
-		_trigger_region.x1 = region.x2;
-		_trigger_region.x2 = region.x1;
+		_trigger_zone.x1 = zone.x2;
+		_trigger_zone.x2 = zone.x1;
 	}
-	if (region.y1 <= region.y2) {
-		_trigger_region.y1 = region.y1;
-		_trigger_region.y2 = region.y2;
+	if (zone.y1 <= zone.y2) {
+		_trigger_zone.y1 = zone.y1;
+		_trigger_zone.y2 = zone.y2;
 	} else {
-		_trigger_region.y1 = region.y2;
-		_trigger_region.y2 = region.y1;
+		_trigger_zone.y1 = zone.y2;
+		_trigger_zone.y2 = zone.y1;
 	}
 }
 
-Camera::trig_region_t Camera::getTriggerRegion(void)
+Camera::trig_zone_t Camera::getTriggerZone(void)
 {
-	return _trigger_region;
+	return _trigger_zone;
 }
 
 void Camera::externalTrigger(void) {
@@ -411,16 +411,20 @@ void Camera::_triggerLoop(void) {
 					if (TRIG_FALLING == _trigger_direction) {
 						triggered ^= 1;
 					}
-				} else if (TRIG_REGION == _trigger_source) {
-					// trigger on pixel in region
-					pixels = _trigger_region.x1;
-					while (pixels <= _trigger_region.x2) {
+				} else if (TRIG_ZONE == _trigger_source) {
+					// trigger on pixel in zone
+					pixels = _trigger_zone.x1;
+					while (pixels <= _trigger_zone.x2) {
 						uint16_t p = _frame_buffer[_frame_write].pixels[pixels];
-						if (p >= _trigger_region.y1 && p <= _trigger_region.y2) {
+						if (p >= _trigger_zone.y1 && p <= _trigger_zone.y2) {
 							triggered = 1;
 							break;
 						}
 						pixels++;
+					}
+					// if direction falling, reverse logic (trigger if all pixels outside zone, don't trigger if any pixel inside)
+					if (TRIG_FALLING == _trigger_direction) {
+						triggered ^= 1;
 					}
 				}
 

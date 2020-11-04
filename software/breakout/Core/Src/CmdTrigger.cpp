@@ -17,10 +17,11 @@
 CmdTrigger::CmdTrigger(Camera* camera) {
 	init("trigger",
 		 "\ttrigger <on|off>: Enable/disable trigger.\r\n"
-		 "\ttrigger source <EXTERNAL | LEVEL | REGION>: Select trigger source.\r\n"
+		 "\ttrigger source <EXTERNAL | LEVEL | ZONE>: Select trigger source.\r\n"
 		 "\ttrigger direction <RISING | FALLING>: For external trigger, set direction of edge.\r\n"
+			"\t\t\tFor level and zone trigger, set whether signal crosses or not.\r\n"
 		 "\ttrigger level <level>: For level trigger, set level above which to trigger.\r\n"
-		 "\ttrigger region <x1 y1 x2 y2>: For region trigger, set rectangle within which to trigger.\r\n");
+		 "\ttrigger zone <x1 y1 x2 y2>: For zone trigger, set rectangle within which to trigger.\r\n");
 	_camera = camera;
 }
 
@@ -73,8 +74,8 @@ void CmdTrigger::handler(Shell* shell) {
 			case Camera::TRIG_LEVEL:
 				shell->writeString("LEVEL");
 				break;
-			case Camera::TRIG_REGION:
-				shell->writeString("REGION");
+			case Camera::TRIG_ZONE:
+				shell->writeString("ZONE");
 				break;
 			default:
 				shell->writeString("INVALID");
@@ -88,8 +89,8 @@ void CmdTrigger::handler(Shell* shell) {
 			_camera->setTriggerSource(Camera::TRIG_EXTERNAL);
 		} else if (0 == stricmp(param, "level")) {
 			_camera->setTriggerSource(Camera::TRIG_LEVEL);
-		} else if (0 == stricmp(param, "region")) {
-			_camera->setTriggerSource(Camera::TRIG_REGION);
+		} else if (0 == stricmp(param, "zone")) {
+			_camera->setTriggerSource(Camera::TRIG_ZONE);
 		} else {
 			shell->error("invalid trigger source!");
 			return;
@@ -152,40 +153,39 @@ void CmdTrigger::handler(Shell* shell) {
 		return;
 	}
 
-	if (0 == stricmp("region", param)) {
-		Camera::trig_region_t region;
+	if (0 == stricmp("zone", param)) {
+		Camera::trig_zone_t zone;
 		param = shell->readParam();
 		if (!param) {
-			char region_str[32];
-			region = _camera->getTriggerRegion();
-			snprintf(region_str, 32, "%d %d %d %d", region.x1, region.y1, region.x2, region.y2);
-			shell->writeString(region_str);
+			char zone_str[32];
+			zone = _camera->getTriggerZone();
+			snprintf(zone_str, 32, "%d %d %d %d", zone.x1, zone.y1, zone.x2, zone.y2);
+			shell->writeString(zone_str);
 			shell->newline();
 			return;
 		}
 
-		param = shell->readParam();
 		if (param) {
-			region.x1 = shell->paramToUInt(param);
+			zone.x1 = shell->paramToUInt(param);
 		}
 		param = shell->readParam();
 		if (param) {
-			region.y1 = shell->paramToUInt(param);
+			zone.y1 = shell->paramToUInt(param);
 		}
 		param = shell->readParam();
 		if (param) {
-			region.x2 = shell->paramToUInt(param);
+			zone.x2 = shell->paramToUInt(param);
 		}
 		param = shell->readParam();
 		if (param) {
-			region.y2 = shell->paramToUInt(param);
+			zone.y2 = shell->paramToUInt(param);
 		}
 
-		if (!param || region.x1 > 1023 || region.x2 > 1023 || region.y1 > 4095 || region.y2 > 4095) {
-			shell->error("Invalid trigger region!");
+		if (!param || zone.x1 > 1023 || zone.x2 > 1023 || zone.y1 > 4095 || zone.y2 > 4095) {
+			shell->error("Invalid trigger zone!");
 			return;
 		} else {
-			_camera->setTriggerRegion(region);
+			_camera->setTriggerZone(zone);
 			shell->ok();
 			return;
 		}

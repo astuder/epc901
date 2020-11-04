@@ -60,9 +60,9 @@ class Camera:
         trig_str = "trigger level {}".format(level)
         self.sendCommand(trig_str)
 
-    def setTriggerRegion(self, x1, y1, x2, y2):
-        trig_str = "trigger region {} {} {} {}".format(x1, y1, x2, y2)
-        self.sendCommad(trig_str)
+    def setTriggerZone(self, x1, y1, x2, y2):
+        trig_str = "trigger zone {} {} {} {}".format(x1, y1, x2, y2)
+        self.sendCommand(trig_str)
 
     def capture(self):
         self.sendCommand("capture")

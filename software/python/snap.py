@@ -14,10 +14,10 @@ import argparse
 parser = argparse.ArgumentParser(description="EPC901 Live View 0.1")
 parser.add_argument("-p", help="serial port of camera, for example /dev/serial0 or COM3", dest="port", required=True)
 parser.add_argument("-e", help="exposure time in microseconds", dest="exposure", type=int, default=1000)
-parser.add_argument("-t", help="enable trigger and select source", dest="trig_source", choices=["external", "level", "region"])
+parser.add_argument("-t", help="enable trigger and select source", dest="trig_source", choices=["external", "level", "zone"])
 parser.add_argument("-tdir", help="direction for external and level trigger", dest="trig_direction", choices=["falling", "rising"])
 parser.add_argument("-tl", help="brightness for level trigger (0-4095)", dest="trig_level", type=int)
-parser.add_argument("-tr", help="rectangle for region trigger", dest="trig_region", metavar="x1,y1,x2,y2")
+parser.add_argument("-tz", help="rectangle for zone trigger", dest="trig_zone", metavar="x1,y1,x2,y2")
 parser.add_argument("-td", help="delay in milliseconds after trigger", dest="trig_delay", type=int)
 parser.add_argument("-a", help="automatically scale based on image content", dest="auto_scale", action="store_true", default=False)
 parser.add_argument("-gq", help="quiet mode, don't show window with graph", dest="graph_quiet", action="store_true", default=False)
@@ -35,9 +35,9 @@ if args.trig_source is not None:
     camera.setTriggerSource(args.trig_source)
 if args.trig_level is not None:
     camera.setTriggerLevel(args.trig_level)
-if args.trig_region is not None:
-    x1,y1,x2,y2 = args.trig_region.split(",")
-    camera.setTriggerRegion(x1, y1, x2, y2)
+if args.trig_zone is not None:
+    x1,y1,x2,y2 = args.trig_zone.split(",")
+    camera.setTriggerZone(x1, y1, x2, y2)
 if args.trig_direction is not None:
     camera.setTriggerDirection(args.trig_direction)
 if args.trig_delay is not None:

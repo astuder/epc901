@@ -46,7 +46,7 @@ public:
 	enum trig_src_t {
 		TRIG_EXTERNAL = 0,
 		TRIG_LEVEL = 1,
-		TRIG_REGION = 2
+		TRIG_ZONE = 2
 	};
 
 	enum trig_dir_t {
@@ -54,7 +54,7 @@ public:
 		TRIG_FALLING = 1
 	};
 
-	struct trig_region_t {
+	struct trig_zone_t {
 		uint16_t x1, y1, x2, y2;
 	};
 
@@ -83,8 +83,8 @@ public:
 	trig_dir_t getTriggerDirection(void);
 	void setTriggerLevel(uint16_t level);
 	uint16_t getTriggerLevel(void);
-	void setTriggerRegion(trig_region_t region);
-	trig_region_t getTriggerRegion(void);
+	void setTriggerZone(trig_zone_t zone);
+	trig_zone_t getTriggerZone(void);
 	void externalTrigger(void);
 
 	uint8_t capture(void);
@@ -120,7 +120,7 @@ private:
 	trig_src_t _trigger_source;
 	uint16_t _trigger_delay;
 	uint16_t _trigger_level;
-	trig_region_t _trigger_region;
+	trig_zone_t _trigger_zone;
 	uint8_t _external_trigger;
 
 	uint32_t _capture_start_time;
