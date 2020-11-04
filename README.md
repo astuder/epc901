@@ -68,7 +68,7 @@ Pin|Function|Comment
 11|GND|digital ground
 12|ADC_CLK|SPI clk to on-board ADC
 13|ADC_DATA|SPI data from on-board ADC
-14|ADC_CS|SPI chip select of on-board ADC
+14|ADC_CS|SPI chip select for on-board ADC
 15|GND|digital ground
 16|3V3|3.3V power supply
 17|GND|digital ground
@@ -80,8 +80,8 @@ Pin|Function|Comment
 
 ID|Function|Comment
 -|-|-
-JP1|STAR GND|star ground point between GND and GNDA. Close to connect, leave open if GNDA and GND are connected off-board.
-JP2|ADC SELECTION|selects whether to use the on-board ADC or an external ADC. External ADC will route VIDEO_P to pin 8 in the connector.
+JP1|STAR GND|Star ground point between GND and GNDA. Close to connect, leave open if GNDA and GND are connected off-board.
+JP2|ADC SELECTION|Selects whether to use the on-board ADC or an external ADC. External ADC will route VIDEO_P to pin 8 in the connector.
 
 ### Config resistor array
 
@@ -115,14 +115,14 @@ you will likely have to adapt the firmware to make it work.
 
 |Arduino|Nucleo|L496ZG|Breakout|Comment
 |-|-|-|-|-
-|+3V3|CN8 7|+3V3||connected to JP1
-|+5V|CN8 9|+5V||connected to 3.3V LDO
+|+3V3|CN8 7|+3V3||Connected to JP1.
+|+5V|CN8 9|+5V||Connected to 3.3V LDO.
 |GND|CN8 11|GND|GND|
 |GND|CN8 13|GND|GND|
 |D0|CN10 16|PD9|PWR_DOWN|
 |D1|CN10 14|PD8|DATA_RDY|
 |D2|CN10 12|PF15|CLR_DATA|
-|D3|CN10 10|PE13|SHUTTER|controlled by TIM1_CH3
+|D3|CN10 10|PE13|SHUTTER|Controlled by TIM1_CH3.
 |D4|CN10 8|PF14|CLR_PIX|
 |D9|CN7 18|PD15|READ|
 |D10|CN7 16|PD14|ADC_CS|
@@ -131,20 +131,20 @@ you will likely have to adapt the firmware to make it work.
 |GND|CN7 8|GND|GND|
 |A0|CN9 1|PA3|VIDEO_P|
 |A1|CN9 3|PC0|VIDEO_N|
-||CN10 1|AVDD||connected to JP3, reserved to supply analog power from Nucleo in future revisions
-||CN10 3|AVSS||connected to JP4, alternative source for analog ground from Nucleo
+||CN10 1|AVDD||Connected to JP3, reserved to supply analog power from Nucleo in future revisions.
+||CN10 3|AVSS||Connected to JP4, alternative source for analog ground from Nucleo.
 ||CN10 5|GND|GND|
-||CN10 7|PB1|VIDEO_P|alternative analog pins for use with AVDD and AVSS connection in future revisions
-||CN10 9|PC2|VIDEO_N|alternative analog pins for use with AVDD and AVSS connection in future revisions
+||CN10 7|PB1|VIDEO_P|Alternative analog pins for use with AVDD and AVSS connection in future revisions.
+||CN10 9|PC2|VIDEO_N|Alternative analog pins for use with AVDD and AVSS connection in future revisions.
 
 ### Jumpers
 
 ID|Function|Comment
 -|-|-
-JP1|3.3V VCC|select between LDO on adapter or Nucleo (HOST) as source for 3.3V power supply to breakout board
-JP2|* GND|star ground point between GND and GNDA. Close to connect, leave open if GNDA and GND are connected on breakout board.
-JP3|AVDD|reserved for future use to supply power to VDD_OA of the EPC901 from the Nucleo
-JP4|AVSS|star ground point between analog ground of the breakout board and analog ground of the Nucleo. May be useful when using the ADCs of the STM32.
+JP1|3.3V VCC|Select between LDO on adapter or Nucleo (HOST) as source for 3.3V power supply to breakout board.
+JP2|* GND|Star ground point between GND and GNDA. Close to connect, leave open if GNDA and GND are connected on breakout board.
+JP3|AVDD|Reserved for future use to supply power to VDD_OA of the EPC901 from the Nucleo.
+JP4|AVSS|Star ground point between analog ground of the breakout board and analog ground of the Nucleo. May be useful when using the ADCs of the STM32.
 
 ## Shared
 
@@ -166,48 +166,48 @@ procedure for building the firmware and programming the NUCLEO evaluation board.
 
 The firmware exposes a command shell over serial. The parameters of the serial connection are 115200 8N1.
 
-Preceeding a command with @ will suppress local echo and command prompt, which is useful when writing an application that interacts with the shell.
+Preceding a command with @ will suppress local echo and command prompt, which is useful when developing an application that interacts with the shell.
 
 Most commands that configure an aspect of the firmware return the current setting if no value is provided. For example ```exposure``` will return the currently configured exposure time.
 
 |Command|Description|
 |-|-|
-|help|display list of available commands|
-|help <command>|display help text for command|
-|echo <on/off>|turn local echo on or off|
-|regread <register>|read register of image sensor over I2C|
-|regwrite <register> <value>|write to value to register of image sensor over I2C|
-|reset mcu|reset the STM32 microcontroller|
-|reset camera|reset the camera settings, for example exposure or burst, to their defaults|
-|reset sensor|software reset of the image sensor through I2C|
-|exposure <time_us>|set exposure time in microseconds|
-|exposure max|get maximum exposure time supported|
-|capture|start capture using the configured settings|
-|capture abort|if there's a capture in progress, abort current capture|
-|transfer|read next image from the frame buffer|
-|transfer all|read all images available in the frame buffer|
-|transfer last|read last image from frame buffer, all other images will be discarded|
-|burst <on/off>|turn burst mode on or off|
-|burst fast|turn on burst mode with fast capture, where image capture and data read out overlap. this can be noisier than regular burst mode.|
-|burst frames <count>|set number of frames to capture in a burst|
-|burst interval <time_ms>|set interval in milliseconds at which frames are captured. 0 will capture frames at the maximum speed possible.|
-|trigger <on/off>|enable or disable trigger|
-|trigger source <external/level/zone>|select source of trigger signal|
-|trigger direction <rising/falling>|set which direction of a signal will trigger. for ```level``` and ```zone``` rising means above/inside level/zone, falling means NOT above/inside|
-|trigger level <level>|set trigger level for ```level``` trigger source|
-|trigger zone <x1 y1 x2 y2>|set trigger zone for ```zone``` trigger source|
+|help|Display list of available commands.|
+|help COMMAND|Display help text for command.|
+|echo ON/OFF|Turn local echo on or off.|
+|regread REGISTER|Read register of image sensor over I2C.|
+|regwrite REGISTER VALUE|Write to value to register of image sensor over I2C.|
+|reset mcu|Reset the STM32 microcontroller.|
+|reset camera|Reset the camera settings, for example exposure or burst, to their defaults.|
+|reset sensor|Software reset of the image sensor through I2C.|
+|exposure TIME_US|Set exposure time in microseconds.|
+|exposure max|Get maximum exposure time supported.|
+|capture|Start capture using the configured settings.|
+|capture abort|If there's a capture in progress, abort current capture.|
+|transfer|read next image from the frame buffer.|
+|transfer all|read all images available in the frame buffer.|
+|transfer last|read last image from frame buffer, all other images will be discarded.|
+|burst ON/OFF|turn burst mode on or off.|
+|burst fast|Turn on burst mode with fast capture, where image capture and data read out overlap. This can result in noisier data than regular burst mode.|
+|burst frames COUNT|Set number of frames to capture in a burst.|
+|burst interval TIME_MS|Set interval in milliseconds at which frames are captured. 0 will capture frames at the maximum speed possible.|
+|trigger ON/OFF|Enable or disable trigger.|
+|trigger source EXTERNAL/LEVEL/ZONE|Select source of trigger signal.|
+|trigger direction RISING/FALLING|Set which direction of a signal will trigger. for ```level``` and ```zone``` rising means above/inside level/zone, falling means NOT above/inside.|
+|trigger level LEVEL|Set trigger level for ```level``` trigger source.|
+|trigger zone X1 Y1 X2 Y2|Set trigger zone defined by two corners for ```zone``` trigger source.|
 
 ### Capture logic
 
-The capture command will start a process based on the configuration of the camera.
+The ```capture``` command will start the image capture process based on the configuration of the camera.
 
-First the firmware check if there's enough space in the frame buffer for the configured number of frames (1 or burst frames). An error will be returned if there is not enoug space.
+First the firmware checks if there's enough space in the frame buffer for the configured number of frames (1 or burst frames). An error will be returned if there is not enoug space.
 
-Next, if trigger is enabled, the camera waits for the trigger condition is met. 
+Next, if ```trigger``` is enabled, the camera waits until the configured trigger condition is met. 
 
-Next, image capture starts. If burst is enabled, it will capture the configured number of frames. All frames captured are stored in a frame buffer. 
+Next, image capture starts. If ```burst``` is enabled, it will capture the configured number of frames. All frames captured are stored in a frame buffer. 
 
-After the capture process is complete, images can be read from the frame buffer with the transfer command.
+After the capture process is complete, images can be read from the frame buffer with the ```transfer``` command.
 
 The shell will respond with ```BUSY``` if the camera is waiting for a trigger or a single image capture or burst is in progress. At any time, the command ```capture abort``` will return the camera back to idle state.
 
@@ -218,47 +218,59 @@ The shell will respond with ```BUSY``` if the camera is waiting for a trigger or
 The external trigger source is wired to pin D35/PB11 and the USER button (B1).
 
 Trigger direction ```rising``` triggers when the signal changes from low to high, or when the button is pressed down.
-Trigger direction ```falling``` trigers when the signal changes from high to low, or when the button is released.
+Trigger direction ```falling``` triggers when the signal changes from high to low, or when the button is released.
 
 **Level**
 
-The level trigger source uses live sensor data to trigger. When starting capture, the firmware will continously capture images until a trigger occurs or capture is aborted.
+The level trigger source uses live sensor data to trigger. When starting capture, the firmware will continously capture images until the trigger condition is met or capture is aborted.
 
-Trigger direction ```rising``` triggers when any pixel is above the configured trigger level.
-Trigger direction ```falling``` triggers when no pixel is above the configured trigger level.
+Trigger direction ```rising``` triggers when a pixel is on or above the configured trigger level.
+Trigger direction ```falling``` triggers when no pixel is on or above the configured trigger level.
 
 **Zone**
 
-The zone trigger source uses live sensor data to trigger. When starting capture, the firmware will continously capture images until a trigger occurs or capture is aborted.
+The zone trigger source uses live sensor data to trigger. When starting capture, the firmware will continously capture images until the trigger condition is met or capture is aborted.
 
-Trigger direction ```rising``` triggers when any pixel is inside the configured trigger zone.
+Trigger direction ```rising``` triggers when a pixel is inside the configured trigger zone.
 Trigger direction ```falling``` triggers when no pixel is inside the configured trigger zone.
 
 ### Transfer format
 
-The transfer command will read images out of the frame buffer and send them over serial. Each image is sent in two chuncks, each terminated with a linefeed. 
+The ```transfer``` command reads images from the frame buffer and sends them over serial. Each image is sent in two chuncks, each terminated with a linefeed. 
 
-1. Frame metadata seperated with commas: frame number, time in milliseconds since first frame, exposure time in milliseconds
-2. Frame data: a continous string with a 3-character hexadecimal number per pixel representing the brightness value
+1. Frame metadata seperated with commas: frame number, time in milliseconds since first frame, exposure time in microseconds
+2. Frame data: a continous string with one 3-character hexadecimal number per pixel representing the brightness value
 
 ## Python
 
-The folder [```./software/python```](https://github.com/astuder/epc901/tree/main/software/python) contains Python library that wraps the serial interface exposed by the
-firmware, and examples of Python scripts that use the library.
+The folder [```./software/python```](https://github.com/astuder/epc901/tree/main/software/python) contains a Python library that wraps the shell of the
+firmware, and a few useful Python scripts that use the library.
 
 ### epc901camera.py
 
-Python library wrapping the serial interface exposed by the firmware into an API that's easy to use from Python.
+The Python library ```epc901camera.py``` wraps the shell exposed by the firmware into an API that's easy to use from Python. 
+
+```
+from epc901camera import Camera
+camera = Camera()
+camera.open("my serial port")
+camera.setExposure(1000)
+camera.capture()
+pixels = camera.getPixels()
+camera.close()
+```
+
+See [example scripts](#example-scripts) for more details.
 
 ### example scripts
 
 There are three scripts to interact with the breakout board:
-* **live.py**: displays output of the image sensor in realtime
-* **snap.py**: captures one image
-* **burst.py**: captures a series of images in a burst
+* ```live.py``` displays output of the image sensor in realtime
+* ```snap.py``` captures one image
+* ```burst.py``` captures a series of images in a burst
 
 The scripts are controlled with shared and a few unique command line arguments.
-|Argument|live.py|snap.py|burst.py|description|
+|Argument|```live.py```|```snap.py```|```burst.py```|Description|
 |-|-|-|-|-|
 |-h, --help|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|Display help text.|
 |-p PORT|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|Serial port which connects to the camera board, this is the only required argument.|
