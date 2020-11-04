@@ -110,7 +110,7 @@ def graph_loop(frame):
     if args.auto_scale == False:
         ax1.set_ylim((0, 3000), auto=False)
     if args.scale_x is not None:
-        ax1.plot(yar, pixels)   # broken
+        ax1.plot(xscale, yar)
     else:
         ax1.plot(yar)
 
