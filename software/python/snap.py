@@ -11,7 +11,7 @@ import argparse
 
 # read command line arguments
 # we expect camera.py -p <serial port> -e <exposure time in ms>
-parser = argparse.ArgumentParser(description="EPC901 Live View 0.1")
+parser = argparse.ArgumentParser(description="EPC901 Single Capture 1.0")
 parser.add_argument("-p", help="serial port of camera, for example /dev/serial0 or COM3", dest="port", required=True)
 parser.add_argument("-e", help="exposure time in microseconds", dest="exposure", type=int, default=1000)
 parser.add_argument("-t", help="enable trigger and select source", dest="trig_source", choices=["external", "level", "zone"])
