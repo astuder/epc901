@@ -278,7 +278,7 @@ The scripts are controlled with shared and a few unique command line arguments.
 |-png PNG_FILE||:heavy_check_mark:|:heavy_check_mark:|Save sensor data as a gray-scale bitmap in a PNG file.|
 |-csv CSV_FILE||:heavy_check_mark:|:heavy_check_mark:|Save sensor data as CSV file.|
 |-a|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|Automatically scale vertical axis of graphs based on image data. If not specified, the Y axis will go from 0 to 3000.|
-|-sx px1,w1,px2,w2|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|Scale labels of horizontel axis of graphs by linear interpolation based on two points, for example to reflect wavelengths in a spectrograph. If not specified, the X axis will be labelled with pixel positions 0-1024|
+|-sx px1,w1,px2,w2|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|Scale labels of horizontal axis of 2D graphs by linear interpolation based on two points, for example to reflect wavelengths in a spectrograph. If not specified, the X axis will be labelled with pixel positions 0-1024.|
 
 # License
 
