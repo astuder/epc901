@@ -30,10 +30,8 @@ This repository contains design files to build hardware and software to interact
   * [Transfer format](#transfer-format)
 * [Python](#python)
   * [epc901camera.py](#epc901camerapy)
-  * [live.py](#livepy)
-  * [snap.py](#snappy)
-  * [burst.py](#burstpy)
-
+  * [example scripts](#example-scripts)
+ 
 [License](#license)
 
 # Hardware
@@ -252,17 +250,35 @@ firmware, and examples of Python scripts that use the library.
 
 Python library wrapping the serial interface exposed by the firmware into an API that's easy to use from Python.
 
-### live.py
+### example scripts
 
-Python script that displays output of the image sensor in realtime.
+There are three scripts to interact with the breakout board:
+* **live.py**: displays output of the image sensor in realtime
+* **snap.py**: captures one image
+* **burst.py**: captures a series of images in a burst
 
-### snap.py
-
-Python script that captures one image.
-
-### burst.py
-
-Python script that captures a series of images in a burst.
+The scripts are controlled with shared and a few unique command line arguments.
+|Argument|live.py|snap.py|burst.py|description|
+|-|-|-|-|-|
+|-h, --help|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|Display help text.|
+|-p PORT|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|Serial port which connects to the camera board, this is the only required argument.|
+|-e EXPOSURE|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|Set exposure time in microseconds. If not specified, the default exposure time is 1ms (1000us).|
+|-t {external,level,region}||:heavy_check_mark:|:heavy_check_mark:|Enable trigger and select trigger source. See [Trigger logic](#trigger-logic).|
+|-tdir {falling,rising}||:heavy_check_mark:|:heavy_check_mark:|Set direction of trigger logic.|
+|-tl TRIG_LEVEL||:heavy_check_mark:|:heavy_check_mark:|Set brightness for level trigger. Valid values are 0-4095.|
+|-tr x1,y1,x2,y2||:heavy_check_mark:|:heavy_check_mark:|Define rectangle for region trigger. Valid x values are 0-1023, valid y values are 0-4095.|
+|-td TRIG_DELAY||:heavy_check_mark:|:heavy_check_mark:|Set delay in milliseconds after trigger event before image capture starts.|
+|-f FRAMES|||:heavy_check_mark:|Number of frames to capture in a burst.|
+|-i INTERVAL|||:heavy_check_mark:|Set time interval in milliseconds between frames. 0 means best effort, i.e. at maximum speed possible. As it takes 1.3ms to read out a frame, effective capture rates may be lower than the configured interval. |
+|-fast|||:heavy_check_mark:|Enable special burst mode where frames are read out of the sensor while the next exposure is captured. This may increase noise, but will increase effective burst speeds.|
+|-gq||:heavy_check_mark:|:heavy_check_mark:|Don't display graph window.|
+|-g GRAPH_TYPE|||:heavy_check_mark:|Display animated 2D graph or 3D surface plot. If argument is missing, no graph will be displayed.|
+|-gc COLOR|||:heavy_check_mark:|Select alternative color map for 3D graph.|
+|-gpng GRAPH_FILE||:heavy_check_mark:|:heavy_check_mark:|Save graph as PNG file.|
+|-png PNG_FILE||:heavy_check_mark:|:heavy_check_mark:|Save sensor data as a gray-scale bitmap in a PNG file.|
+|-csv CSV_FILE||:heavy_check_mark:|:heavy_check_mark:|Save sensor data as CSV file.|
+|-a|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|Automatically scale vertical axis of graphs based on image data. If not specified, the Y axis will go from 0 to 3000.|
+|-sx px1,w1,px2,w2|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|Scale labels of horizontel axis of graphs by linear interpolation based on two points, for example to reflect wavelengths in a spectrograph. If not specified, the X axis will be labelled with pixel positions 0-1024|
 
 # License
 
