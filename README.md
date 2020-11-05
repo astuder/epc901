@@ -260,7 +260,7 @@ pixels = camera.getPixels()
 camera.close()
 ```
 
-You can use ```sendCommand()``` to directly interact with the shell, which can be useful for operations that are not supported by the library yet. For The following snippet writes to I2C registers of the sensor to increase the gain.
+You can use ```sendCommand()``` to directly interact with the shell, which can be useful for operations that are not supported by the library yet. The following snippet writes to I2C registers of the sensor to increase the gain.
 ```
 camera.sendCommand("regwrite 2 0x99")  # turn on config via regs
 camera.sendCommand("regwrite 0 0x19")  # 4x gain, read-out direction same as set by resistor
