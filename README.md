@@ -238,7 +238,7 @@ Trigger direction ```falling``` triggers when no pixel is inside the configured 
 
 The ```transfer``` command reads images from the frame buffer and sends them over serial. Each image is sent in two chuncks, each terminated with a linefeed. 
 
-1. Frame metadata seperated with commas: frame number, time in milliseconds since first frame, exposure time in microseconds
+1. Frame metadata seperated with commas: frame number, time in milliseconds since first frame, exposure time in microseconds, number of pixels in frame
 2. Frame data: a continous string with one 3-character hexadecimal number per pixel representing the brightness value
 
 ## Python
