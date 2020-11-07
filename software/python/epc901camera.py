@@ -88,9 +88,10 @@ class Camera:
             # no pixels available
             return
         else:
-            a, b, c = frame_meta.split(",")
+            a, b, c, d = frame_meta.split(",")
             self.frame_number = int(a)
             self.frame_timestamp = int(b)
             self.frame_exposure = int(c)
+            self.frame_pixels = int(d)
         frame_data = [int(x, 16) for x in wrap(self.ser.readline().decode("utf-8"), 3)]
         return frame_data

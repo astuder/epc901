@@ -43,6 +43,9 @@ private:
 	uint8_t _i2c_addr;
 	uint8_t _chip_rev;
 	uint8_t _power_state;
+	uint8_t _conf_ctrl;
+	uint8_t _hor_bin;
+	uint8_t _roi_sel;
 
 	// timer clk runs at 80 MHz -> max duration for 2x16 bit timer is 2^32/80 = ~53687ms
 	// therefore for longer exposures we have control shutter manually (that's > 53s!)

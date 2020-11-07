@@ -19,11 +19,12 @@ class Shell;
 class Frame {
 public:
 	Frame();
-	static const uint16_t PIXEL_COUNT = 1024;
+	static const uint16_t MAX_PIXEL_CNT = 1024;
 	uint32_t number;
 	uint32_t timestamp;
 	uint32_t exposure_time;
-	uint16_t pixels[PIXEL_COUNT];
+	uint16_t pixel_cnt;
+	uint16_t pixels[MAX_PIXEL_CNT];
 private:
 };
 
@@ -100,7 +101,7 @@ private:
 	void _triggerDelayLoop(void);
 	void _startCapture(uint8_t pre_trigger);
 	void _stopCapture(void);
-	void _commitFrame(uint32_t timestamp);
+	void _commitFrame(uint32_t timestamp, uint16_t pixel_cnt);
 	void _setupExternalTrigger(void);
 
 	EPC901* _sensor;

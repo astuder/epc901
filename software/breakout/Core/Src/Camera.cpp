@@ -320,7 +320,7 @@ void Camera::_captureLoop(void) {
 			// abort if error reading out pixels
 			_stopCapture();
 		}
-		_commitFrame(_capture_frame_time);
+		_commitFrame(_capture_frame_time, pixels);
 		_capture_frame++;
 
 		if (!_burst_enable || _capture_frame >= _burst_frames) {
@@ -368,7 +368,7 @@ void Camera::_captureLoopFast(void) {
 			// abort if error reading out pixels
 			_stopCapture();
 		}
-		_commitFrame(prev_frame_time);
+		_commitFrame(prev_frame_time, pixels);
 	}
 
 	if (_capture_pending == 0) {
@@ -400,9 +400,10 @@ void Camera::_triggerLoop(void) {
 			} else {
 				if (TRIG_LEVEL == _trigger_source) {
 					// trigger on pixel exceeding level
-					while (pixels > 0) {
-						pixels--;
-						if (_frame_buffer[_frame_write].pixels[pixels] >= _trigger_level) {
+					uint16_t p = pixels;
+					while (p > 0) {
+						p--;
+						if (_frame_buffer[_frame_write].pixels[p] >= _trigger_level) {
 							triggered = 1;
 							break;
 						}
@@ -413,14 +414,14 @@ void Camera::_triggerLoop(void) {
 					}
 				} else if (TRIG_ZONE == _trigger_source) {
 					// trigger on pixel in zone
-					pixels = _trigger_zone.x1;
-					while (pixels <= _trigger_zone.x2) {
-						uint16_t p = _frame_buffer[_frame_write].pixels[pixels];
-						if (p >= _trigger_zone.y1 && p <= _trigger_zone.y2) {
+					uint16_t p = _trigger_zone.x1;
+					while (p <= _trigger_zone.x2) {
+						uint16_t val = _frame_buffer[_frame_write].pixels[p];
+						if (val >= _trigger_zone.y1 && val <= _trigger_zone.y2) {
 							triggered = 1;
 							break;
 						}
-						pixels++;
+						p++;
 					}
 					// if direction falling, reverse logic (trigger if all pixels outside zone, don't trigger if any pixel inside)
 					if (TRIG_FALLING == _trigger_direction) {
@@ -430,7 +431,7 @@ void Camera::_triggerLoop(void) {
 
 				if (triggered) {
 					if (_trigger_delay == 0) {
-						_commitFrame(_capture_frame_time);
+						_commitFrame(_capture_frame_time, pixels);
 						if (_burst_enable && _burst_frames > 0) {
 							// capture remaining frames
 							_startCapture(0);
@@ -485,10 +486,11 @@ void Camera::_stopCapture(void) {
 	_state = ST_IDLE;
 }
 
-void Camera::_commitFrame(uint32_t timestamp) {
+void Camera::_commitFrame(uint32_t timestamp, uint16_t pixel_cnt) {
 	_frame_buffer[_frame_write].number = _frame_count;
 	_frame_buffer[_frame_write].exposure_time = _exposure_time;
 	_frame_buffer[_frame_write].timestamp = timestamp - _capture_start_time;
+	_frame_buffer[_frame_write].pixel_cnt = pixel_cnt;
 
 	_frame_count++;
 	_frame_write++;

@@ -104,6 +104,18 @@ uint8_t EPC901::writeRegister(uint8_t address, uint8_t value) {
 	_powerUp();
 	err = HAL_I2C_Mem_Write(_i2c_handle, EPC_I2C_ADDR, address, 1, &val, 1, 100);
 	_powerDown();
+
+	// update variables that influence pixel count
+	if (err == HAL_OK) {
+		if (address == 0x00) {
+			_roi_sel = (value >> 1) & 0x01;	// region of interest
+			_hor_bin = (value >> 4) & 0x03;	// binning
+		}
+		if (address == 0x02) {
+			_conf_ctrl = value & 0x01;	// configuration control
+		}
+	}
+
 	return err;
 }
 
@@ -113,6 +125,13 @@ uint8_t EPC901::reset(void) {
 	_powerUp();
 	err = HAL_I2C_Master_Transmit(_i2c_handle, 0, &val, 1, 100);
 	_powerDown();
+
+	// set binning, roi and configuration control to defaults
+	// if hor_bin or roi_sel is set differently with pins, this needs to be adjusted
+	_hor_bin = 1;	// no binning
+	_roi_sel = 0;	// all pixels
+	_conf_ctrl = 0;	// configuration controlled by pins
+
 	return err;
 }
 
@@ -216,14 +235,26 @@ uint16_t EPC901::_readImage(uint16_t* buffer) {
 	DWT_Delay_us(1);
 	HAL_GPIO_WritePin(READ_GPIO_Port, READ_Pin, GPIO_PIN_RESET);
 	// wait for conversion (37-3 osc cycles) - ~1us with osc ~36MHz
-	DWT_Delay_us(2);	// TODO: can be reduced to 1us with calibrated oscillator
+	DWT_Delay_us(2);
 
 	// lock SPI handle
 	__HAL_LOCK(_spi_handle);
 	SPI_TypeDef* spi = _spi_handle->Instance;
 
+	// determine number of pixels per frame
+	uint16_t pixel_cnt = 1024;
+	if (_conf_ctrl) {	// configuration is controlled by registers
+		if (_roi_sel) {		// only center half of pixels are captured
+			pixel_cnt /= 2;
+		}
+		if (_hor_bin == 0) {	// binning 2 pixels
+			pixel_cnt /= 2;
+		} else if (_hor_bin == 2) {	// binning 4 pixels
+			pixel_cnt /= 4;
+		}
+	}
+
 	// read pixels
-	static const uint16_t pixel_cnt = 1024;		// TODO: Replace to support binning
 	uint16_t count;
 	uint8_t data_msb, data_lsb;
 

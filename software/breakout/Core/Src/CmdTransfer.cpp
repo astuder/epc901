@@ -64,11 +64,11 @@ void CmdTransfer::handler(Shell* shell) {
 
 	do {
 		char str[32];
-		snprintf(str, 32, "%d,%d,%d", (int) frame->number, (int) frame->timestamp, (int) frame->exposure_time);
+		snprintf(str, 32, "%d,%d,%d,%d", (int) frame->number, (int) frame->timestamp, (int) frame->exposure_time, (int) frame->pixel_cnt);
 		shell->writeString(str);
 		shell->newline();
 		int i = 0;
-		while (i < Frame::PIXEL_COUNT) {
+		while (i < frame->pixel_cnt) {
 			shell->writeHex(frame->pixels[i], 3);
 			i++;
 		}
