@@ -21,6 +21,7 @@ This repository contains design files to build hardware and software to interact
   * [Pin mapping](#pin-mapping)
   * [Jumpers](#jumpers)
 * [Shared](#shared)
+* [Spectroscope tube](#spectroscope-tube)
 
 [Software](#software)
 * [Firmware](#firmware)
@@ -149,6 +150,10 @@ JP4|AVSS|Star ground point between analog ground of the breakout board and analo
 ## Shared
 
 The folder [```./hardware/shared```](https://github.com/astuder/epc901/tree/main/hardware/shared) contains custom KiCad symbols, footprints and 3d models that can be reused across KiCad projects in this repository.
+
+## Spectroscope tube
+
+For spectroscopy experiments we created a tube to mount an optical slit and difraction grating. The 3D model is available in the folder [```./hardware/spectroscope-tube```](https://github.com/astuder/epc901/tree/main/hardware/spectroscope-tube).
 
 # Software
 
