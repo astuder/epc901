@@ -1,12 +1,14 @@
 # Introduction
 The [ESPROS epc901](https://www.espros.com/photonics/epc901/) is a CCD line sensor with a resolution of 1024 monochrome pixels.
 
-Compared to other image sensors the epc901 is very easy to drive, requiring only one voltage, I2C, a few digital I/Os and an ADC. It is also relatively inexpensive
+Compared to other image sensors the epc901 is very easy to drive, requiring only one voltage, I2C, a few digital I/Os and an ADC. It is also moderately priced
 at [$24 in single units from Digi-key](https://www.digikey.com/en/products/detail/espros-photonics-ag/EPC901-CSP32-033/10516882). On the downside, the sensor
 comes in a BGA package, the evaluation kit is [very expensive at $1350](https://www.digikey.com/en/products/detail/espros-photonics-ag/EPC901-EVALUATION-KIT-V1/10516848),
 and we haven't seen this sensor from any other distributors than Digi-key.
 
 This repository contains design files to build hardware and software to interact with the sensor. 
+
+@fmilburn posted a write-up of this project and a few spectroscopy experiments on [element14](https://www.element14.com/community/community/project14/sensors/blog/2020/11/11/spectrography-using-the-epc901-high-speed-line-image-sensor).
 
 ## Table of contents
 
