@@ -54,6 +54,8 @@ using a stainless steel solder stencil and an unmodified toaster oven for reflow
 
 In addition to the image sensor and related passives, the breakout board also integrates an ADC. Footprint and firmware are compatible with [Texas Instruments ADCS7476](https://www.ti.com/product/ADCS7476) and [Analog Devices AD7476](https://www.analog.com/en/products/ad7476.html) which are 1 MSPS 12-bit ADCs with SPI-like interface.
 
+The PCB can be ordered from OSH Park using this [link](https://oshpark.com/shared_projects/5eUl3QVW).
+
 ### Connector pinout
 
 Pin|Function|Comment
@@ -113,6 +115,8 @@ epc901 breakout board on the NUCLEO evaluation board.
 
 The layout of the adapter board follows the Arduino Shield standard. This means you could mount the adapter and sensor breakout board on any compatible MCU board. Though
 you will likely have to adapt the firmware to make it work.
+
+The PCB can be ordered from OSH Park using this [link](https://oshpark.com/shared_projects/md99YXCX).
 
 ### Pin mapping
 
