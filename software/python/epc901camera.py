@@ -8,6 +8,7 @@
 import serial
 import sys
 from textwrap import wrap
+from time import sleep
 
 class Camera:    
     ser = serial.Serial()
@@ -65,6 +66,7 @@ class Camera:
         self.sendCommand(trig_str)
 
     def capture(self):
+        self.sendCommand("burst off")
         self.sendCommand("capture")
 
     def captureBurst(self, fast=False):
@@ -73,7 +75,6 @@ class Camera:
         else:
             self.sendCommand("burst on")
         self.sendCommand("capture")
-        self.sendCommand("burst off")
 
     def getPixels(self, last=False):
         transfer_cmd = "transfer"
@@ -82,6 +83,7 @@ class Camera:
             transfer_cmd = "transfer last"
         frame_meta = self.sendCommand(transfer_cmd) # frame number, timestamp, exposure
         while frame_meta.startswith("BUSY"):
+            sleep(0.1) # wait a bit to avoid hammering the camera
             frame_meta = self.sendCommand(transfer_cmd) # retry if camera is busy
 
         if frame_meta is None or frame_meta.startswith("ERROR"):

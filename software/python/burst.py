@@ -8,6 +8,7 @@
 from epc901camera import Camera
 import sys
 import argparse
+from time import sleep
 
 # read command line arguments
 # we expect camera.py -p <serial port> -e <exposure time in ms>
@@ -64,7 +65,9 @@ if args.scale_x is not None:
 camera.setBurst(args.frames, args.interval)
 print("Recording images..")
 camera.captureBurst(args.fast)
-
+# wait for the estimated duration of the burst as
+# hammering the camera for data impacts maximum burst speed
+sleep((args.frames * args.exposure / 1000000.0) + ((args.frames - 1) * args.interval / 1000.0) + 0.1)
 print("Transfering image data", end="")
 p = camera.getPixels()
 while p:
