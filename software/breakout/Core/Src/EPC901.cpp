@@ -13,11 +13,11 @@
 #include <inttypes.h>
 #include <cstring>
 
-const uint8_t EPC_I2C_ADDR = 0x15 << 1;
+const uint8_t EPC_I2C_ADDR = 0x15;
 
 EPC901::EPC901() {
 	_chip_rev = 0;
-	_i2c_addr = 0;
+	_i2c_addr = EPC_I2C_ADDR << 1;
 	_i2c_handle = 0;
 	_power_state = 0;
 }
@@ -27,7 +27,9 @@ EPC901::~EPC901() {
 
 uint8_t EPC901::init(I2C_HandleTypeDef* i2c_handle, uint8_t i2c_addr, SPI_HandleTypeDef* spi_handle, TIM_HandleTypeDef* tim_handle) {
 	_i2c_handle = i2c_handle;
-	_i2c_addr = i2c_addr << 1;
+	if (i2c_addr != 0) {
+		_i2c_addr = i2c_addr << 1;
+	}
 	_spi_handle = spi_handle;
 	_tim_handle = tim_handle;
 
@@ -55,7 +57,7 @@ uint8_t EPC901::init(I2C_HandleTypeDef* i2c_handle, uint8_t i2c_addr, SPI_Handle
 	// read chip revision
 
 	uint8_t revision;
-	if (HAL_OK == HAL_I2C_Mem_Read(_i2c_handle, EPC_I2C_ADDR, 0xff, 1, &revision, 1, 100)) {
+	if (HAL_OK == HAL_I2C_Mem_Read(_i2c_handle, _i2c_addr, 0xff, 1, &revision, 1, 100)) {
 		_chip_rev = revision;
 	} else {
 		_powerDown();
@@ -90,7 +92,7 @@ uint8_t EPC901::readRegister(uint8_t address, uint8_t* value) {
 	uint8_t val = 0;
 	uint8_t err = 0;
 	_powerUp();
-	err = HAL_I2C_Mem_Read(_i2c_handle, EPC_I2C_ADDR, address, 1, &val, 1, 100);
+	err = HAL_I2C_Mem_Read(_i2c_handle, _i2c_addr, address, 1, &val, 1, 100);
 	if (err == HAL_OK) {
 		*value = val;
 	}
@@ -102,7 +104,7 @@ uint8_t EPC901::writeRegister(uint8_t address, uint8_t value) {
 	uint8_t val = value;
 	uint8_t err = 0;
 	_powerUp();
-	err = HAL_I2C_Mem_Write(_i2c_handle, EPC_I2C_ADDR, address, 1, &val, 1, 100);
+	err = HAL_I2C_Mem_Write(_i2c_handle, _i2c_addr, address, 1, &val, 1, 100);
 	_powerDown();
 
 	// update variables that influence pixel count
