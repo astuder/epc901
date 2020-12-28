@@ -2,3 +2,5 @@
 *.bak
 __pycache__
 datasheets/
+*.sublime-project
+*.sublime-workspace
