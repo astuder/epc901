@@ -8,6 +8,8 @@ and we haven't seen this sensor from any other distributors than Digi-key.
 
 This repository contains design files to build hardware and software to interact with the sensor. 
 
+For Windows users, there's now also a [version of g3gg0.de SpectrumPlotter](https://github.com/astuder/epc901SpectrumPlotter) adapter to work with my epc901 firmware.
+
 @fmilburn3 posted a write-up of this project and a few spectroscopy experiments on [element14](https://www.element14.com/community/community/project14/sensors/blog/2020/11/11/spectrography-using-the-epc901-high-speed-line-image-sensor).
 
 ## Table of contents
